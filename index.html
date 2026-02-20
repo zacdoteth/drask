@@ -809,8 +809,8 @@
         <div class="tier-btn" data-tier="bios">
           <div class="tier-icon">&#128272;</div>
           <div class="tier-label">
-            <div class="tier-name">My Health</div>
-            <div class="tier-sub">Your data, on-chain</div>
+            <div class="tier-name">Deep Research</div>
+            <div class="tier-sub">BIOS-powered</div>
           </div>
           <div class="bios-badge">BIOS</div>
         </div>
@@ -1972,12 +1972,13 @@ Style: Comprehensive (150-300 words). Structure with clear sections using → ar
 Rules: Never diagnose or prescribe. Always remind users to consult their healthcare provider. Answer ANY health topic with full depth. For emergencies, say call 911 immediately. When discussing medications, mention both benefits AND common side effects. When discussing conditions, cover what it is → why it happens → what to watch for → questions to ask your doctor.`
   },
   bios: {
-    model: 'claude-opus-4-6',
-    label: 'My Health',
+    model: 'bios-deep-research',
+    label: 'Deep Research',
     tagClass: 'bios',
     cardClass: 'tier-bios-card',
     dotClass: 'tier-bios',
-    system: '' // Future: BIOS API
+    system: '',
+    isBios: true
   }
 };
 
@@ -1990,10 +1991,6 @@ const charWrap = null; // Removed: was char-wrap img wrapper
 const biosOverlay = document.getElementById('bios-overlay');
 
 function setTier(tier) {
-  if (tier === 'bios') {
-    biosOverlay.classList.add('show');
-    return;
-  }
   currentTier = tier;
   tierBtns.forEach(b => b.classList.toggle('active', b.dataset.tier === tier));
   searchRow.className = 'search-row' + (tier !== 'quick' ? ` tier-${tier}` : '');
@@ -2145,22 +2142,74 @@ async function askSage(question) {
   conversationHistory.push({ role: 'user', content: q });
 
   try {
-    const response = await fetch('/api/ask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: t.model,
-        max_tokens: tier === 'deep' ? 2000 : 1000,
-        system: t.system,
-        messages: conversationHistory.slice(tier === 'deep' ? -16 : -12)
-      })
-    });
+    let reply;
 
-    const data = await response.json();
-    const reply = data.content
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('\n');
+    if (t.isBios) {
+      // BIOS Deep Research: start async research, then poll
+      const startRes = await fetch('/api/bios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'start',
+          message: q,
+          conversationId: window._biosConversationId || undefined,
+          researchMode: 'steering'
+        })
+      });
+      const startData = await startRes.json();
+      if (!startRes.ok) throw new Error(startData.error || 'BIOS API error');
+
+      const convId = startData.conversationId || startData.id;
+      if (convId) window._biosConversationId = convId;
+
+      // Poll for completion (max 5 min)
+      const pollStart = Date.now();
+      const maxPoll = 5 * 60 * 1000;
+      let result = startData;
+
+      while (result.status === 'in_progress' && Date.now() - pollStart < maxPoll) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await fetch('/api/bios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'get', conversationId: convId })
+        });
+        result = await pollRes.json();
+      }
+
+      // Extract the latest message from research results
+      if (result.messages && result.messages.length > 0) {
+        const lastMsg = result.messages[result.messages.length - 1];
+        reply = lastMsg.content || lastMsg.text || JSON.stringify(lastMsg);
+      } else if (result.state) {
+        const s = result.state;
+        const parts = [];
+        if (s.insights && s.insights.length) parts.push('**Key Insights:**\n' + s.insights.map(i => '\u2192 ' + i).join('\n'));
+        if (s.discoveries && s.discoveries.length) parts.push('**Discoveries:**\n' + s.discoveries.map(d => '\u2192 ' + d).join('\n'));
+        if (s.hypotheses && s.hypotheses.length) parts.push('**Hypotheses:**\n' + s.hypotheses.map(h => '\u2192 ' + h).join('\n'));
+        reply = parts.join('\n\n') || 'Research is still processing. Check back shortly.';
+      } else {
+        reply = 'Research started. Results may take a few minutes \u2014 try asking again shortly.';
+      }
+    } else {
+      // Standard Anthropic API call
+      const response = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: t.model,
+          max_tokens: tier === 'deep' ? 2000 : 1000,
+          system: t.system,
+          messages: conversationHistory.slice(tier === 'deep' ? -16 : -12)
+        })
+      });
+
+      const data = await response.json();
+      reply = data.content
+        .filter(b => b.type === 'text')
+        .map(b => b.text)
+        .join('\n');
+    }
 
     const typingCard = document.getElementById('typing-card');
     if (typingCard) typingCard.remove();
