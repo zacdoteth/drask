@@ -1943,7 +1943,7 @@ const CHAR_IMG_SRC = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUND
 
 // ═══ API KEY ═══
 // ⚠️ Client-side key — visible in source. Use a backend proxy for production.
-const ANTHROPIC_API_KEY = 'YOUR_API_KEY_HERE';
+// API key is stored server-side in Vercel env vars
 
 // ═══ TIER CONFIG ═══
 const TIERS = {
@@ -2145,14 +2145,9 @@ async function askSage(question) {
   conversationHistory.push({ role: 'user', content: q });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('/api/ask', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: t.model,
         max_tokens: tier === 'deep' ? 2000 : 1000,
