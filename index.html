@@ -2057,8 +2057,10 @@ class SceneManager {
       this._model.position.y = -newMin.y + this._model.position.y;
       this._model.position.z = 0.5 - newCenter.z + this._model.position.z;
 
-      // Rotate slightly toward the camera so he faces the viewer
-      this._model.rotation.y = 0.15;
+      // Rotate to face the camera directly
+      const dx = this._baseCameraPos.x - this._model.position.x;
+      const dz = this._baseCameraPos.z - this._model.position.z;
+      this._model.rotation.y = Math.atan2(dx, dz);
 
       this._characterHeight = size.y * scale;
       this._modelBasePos.copy(this._model.position);
