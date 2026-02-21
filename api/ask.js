@@ -26,17 +26,31 @@ export default async function handler(req, res) {
         model,
         max_tokens: max_tokens || 1000,
         system: system || '',
-        messages
+        messages,
+        stream: true
       })
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
+      const data = await response.json();
       return res.status(response.status).json(data);
     }
 
-    return res.status(200).json(data);
+    // Stream SSE back to the client
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      res.write(decoder.decode(value, { stream: true }));
+    }
+
+    res.end();
   } catch (err) {
     return res.status(500).json({ error: 'Failed to reach Anthropic API' });
   }

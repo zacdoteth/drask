@@ -13,7 +13,7 @@
 }
 </script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
   :root {
     --sage: #3D9B8F;
@@ -629,9 +629,22 @@
   .a-avatar img { width: 100%; height: 100%; object-fit: cover; }
   .a-name { font-weight: 800; color: var(--sage-deep); font-size: 15px; }
   .a-role { font-size: 11px; color: var(--text-light); }
-  .a-body { font-size: 15px; line-height: 1.75; color: var(--text); }
-  .a-body p { margin-bottom: 10px; }
+  .a-body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15.5px;
+    line-height: 1.8;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    font-optical-sizing: auto;
+  }
+  .a-body p { margin-bottom: 12px; }
   .a-body p:last-child { margin-bottom: 0; }
+  .a-body strong, .a-body b {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 17px;
+    color: var(--sage-deep);
+  }
   .disclaimer {
     font-size: 11px; color: var(--text-light); margin-top: 14px;
     padding-top: 12px; border-top: 1px solid var(--border); font-style: italic;
@@ -2229,7 +2242,7 @@ async function askSage(question) {
         reply = 'Research started. Results may take a few minutes \u2014 try asking again shortly.';
       }
     } else {
-      // Standard Anthropic API call
+      // Standard Anthropic API call — streamed
       const response = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2241,18 +2254,51 @@ async function askSage(question) {
         })
       });
 
-      const data = await response.json();
-      reply = data.content
-        .filter(b => b.type === 'text')
-        .map(b => b.text)
-        .join('\n');
+      // Remove typing indicator and create streaming answer card
+      const typingCard2 = document.getElementById('typing-card');
+      if (typingCard2) typingCard2.remove();
+
+      const streamCard = addResponseCard('answer', '', tier);
+      const bodyEl = streamCard.querySelector('.a-body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      reply = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const payload = line.slice(6).trim();
+            if (payload === '[DONE]') continue;
+            try {
+              const evt = JSON.parse(payload);
+              if (evt.type === 'content_block_delta' && evt.delta && evt.delta.text) {
+                reply += evt.delta.text;
+                let formatted = reply
+                  .replace(/\n\n/g, '</p><p>')
+                  .replace(/\n/g, '<br>')
+                  .replace(/→/g, '<span style="color:var(--sage);font-weight:700">→</span>');
+                bodyEl.innerHTML = '<p>' + formatted + '</p>';
+                streamCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            } catch (e) {}
+          }
+        }
+      }
     }
 
     const typingCard = document.getElementById('typing-card');
     if (typingCard) typingCard.remove();
 
     setCharState('idle');
-    addResponseCard('answer', reply, tier);
     conversationHistory.push({ role: 'assistant', content: reply });
 
     setTimeout(() => {
