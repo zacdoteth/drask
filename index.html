@@ -90,17 +90,12 @@
     pointer-events: none;
   }
   .loading-content { text-align: center; }
-  .loading-duck {
-    font-size: 56px;
-    margin-bottom: 16px;
-    display: inline-block;
-    animation: duck-waddle 1.2s ease-in-out infinite;
-  }
-  @keyframes duck-waddle {
-    0%, 100% { transform: rotate(-8deg) translateY(0); }
-    25% { transform: rotate(8deg) translateY(-6px); }
-    50% { transform: rotate(-6deg) translateY(0); }
-    75% { transform: rotate(6deg) translateY(-4px); }
+  .loading-duck-canvas {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    display: block;
   }
   .loading-logo {
     font-family: 'Bricolage Grotesque', sans-serif;
@@ -1319,7 +1314,7 @@
   <canvas id="scene-canvas"></canvas>
   <div class="scene-loading" id="scene-loading">
     <div class="loading-content">
-      <div class="loading-duck">&#129414;</div>
+      <canvas class="loading-duck-canvas" id="loading-duck-canvas" width="320" height="320"></canvas>
       <div class="loading-logo">
         <span class="loading-dr">Dr.</span><span class="loading-icu">ICU</span>
       </div>
@@ -1510,6 +1505,69 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+
+// ═══ LOADING DUCK — mini 3D renderer for splash screen ═══
+(function initLoadingDuck() {
+  const canvas = document.getElementById('loading-duck-canvas');
+  if (!canvas) return;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(160, 160);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.LinearToneMapping;
+  renderer.toneMappingExposure = 0.75;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
+  camera.position.set(0, 0.3, 2.2);
+  camera.lookAt(0, 0.15, 0);
+
+  // Lights
+  scene.add(new THREE.HemisphereLight(0xE8F5F2, 0xD5CFC5, 0.6));
+  const key = new THREE.DirectionalLight(0xFFF8F0, 0.8);
+  key.position.set(2, 3, 3);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xD8F0F0, 0.3);
+  fill.position.set(-2, 1, 2);
+  scene.add(fill);
+
+  let duck = null;
+  const clock = new THREE.Clock();
+  let alive = true;
+
+  new GLTFLoader().load('public/duck.glb', (gltf) => {
+    duck = gltf.scene;
+    duck.traverse(c => { if (c.isMesh) { c.material.envMapIntensity = 0.05; } });
+    const box = new THREE.Box3().setFromObject(duck);
+    const size = box.getSize(new THREE.Vector3());
+    const s = 0.9 / Math.max(size.x, size.y, size.z);
+    duck.scale.setScalar(s);
+    box.setFromObject(duck);
+    const center = box.getCenter(new THREE.Vector3());
+    duck.position.sub(center);
+    duck.position.y += size.y * s * 0.05;
+    scene.add(duck);
+  });
+
+  function animate() {
+    if (!alive) return;
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    if (duck) {
+      duck.rotation.y = t * 0.8;
+      duck.position.y = Math.sin(t * 1.5) * 0.03;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Cleanup when loading screen is removed
+  window._stopLoadingDuck = () => {
+    alive = false;
+    renderer.dispose();
+  };
+})();
 
 class SceneManager {
   constructor(canvasId) {
@@ -2213,6 +2271,8 @@ class SceneManager {
   }
 
   _revealModel(loadingOverlay) {
+    // Stop loading duck renderer
+    if (window._stopLoadingDuck) window._stopLoadingDuck();
     // Fade out loading overlay
     if (loadingOverlay) {
       loadingOverlay.classList.add('hidden');
