@@ -2370,8 +2370,10 @@ class SceneManager {
       this.triggerClick();
       this.setState('celebrating');
       if (typeof showClickBubble === 'function') {
-        const clickLines = ["Hey there!", "I see you!", "That tickles!", "Hi friend!"];
-        showClickBubble(clickLines[Math.floor(Math.random() * clickLines.length)], 2000);
+        if (!this._clickLines) this._clickLines = ["Hey there!", "I see you!", "That tickles!", "Hi friend!", "Hehe!", "Need something?", "I'm here!"];
+        if (this._clickIdx == null) this._clickIdx = 0;
+        showClickBubble(this._clickLines[this._clickIdx], 2000);
+        this._clickIdx = (this._clickIdx + 1) % this._clickLines.length;
       }
       setTimeout(() => this.setState('idle'), 1500);
     }
