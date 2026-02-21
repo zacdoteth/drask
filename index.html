@@ -174,6 +174,45 @@
     font-weight: 600;
   }
 
+  /* Scene Brand Logo (top-left corner of scene) */
+  .scene-brand {
+    position: absolute;
+    top: 20px;
+    left: 28px;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .scene-brand .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 2px;
+  }
+  .scene-brand .logo .ask {
+    font-size: 22px;
+    color: rgba(255,255,255,0.55);
+  }
+  .scene-brand .logo .dr {
+    font-size: 44px;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .scene-brand .logo .icu-name {
+    font-size: 44px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .scene-brand .logo .tm {
+    font-size: 10px;
+    -webkit-text-fill-color: rgba(255,255,255,0.35);
+  }
+  .scene-brand .tagline {
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.3px;
+  }
+
   /* Scene Overlay — Ask Jeeves style: doc left, input right */
   .scene-overlay {
     position: absolute;
@@ -183,45 +222,56 @@
     align-items: center;
     justify-content: center;
     padding: 24px 40px 24px;
-    padding-top: 10%;
     pointer-events: none;
     z-index: 5;
   }
   .scene-overlay > * {
     pointer-events: auto;
   }
-  .overlay-brand {
+
+  /* ═══ SEARCH PANEL (inside scene, under desk next to Dr. ICU) ═══ */
+  .monitor-frame {
     position: absolute;
-    top: 24px;
-    left: 40px;
-    text-shadow: 0 2px 12px rgba(255,252,245,0.8);
+    left: 48%;
+    bottom: 22%;
+    max-width: 500px;
+    width: 42%;
+    pointer-events: auto;
   }
-  .overlay-brand .tagline {
-    font-family: 'Nunito', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-light);
-    margin-top: -2px;
-  }
-  .overlay-input {
-    max-width: 520px;
-    width: 50%;
-    margin-left: 18%;
-    background: rgba(255, 252, 245, 0.45);
-    backdrop-filter: blur(18px) saturate(1.4);
-    -webkit-backdrop-filter: blur(18px) saturate(1.4);
-    border-radius: 20px;
-    border: 1.5px solid rgba(224, 219, 210, 0.3);
-    padding: 16px 20px 14px;
+  .monitor-bezel {
+    position: relative;
+    background: rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 18px;
+    padding: 0;
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.04),
-      0 1px 3px rgba(0, 0, 0, 0.03);
+      0 4px 24px rgba(0,0,0,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    border: 1.5px solid rgba(255,255,255,0.45);
   }
+  .monitor-titlebar {
+    display: none;
+  }
+  .monitor-led { display: none; }
+  .monitor-screen {
+    background: transparent;
+    border-radius: 18px;
+    padding: 20px 22px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .monitor-screen::before { display: none; }
+  .screen-header {
+    display: none;
+  }
+  .monitor-stand { display: none; }
+  .monitor-base { display: none; }
 
   /* Speech Bubble (3D projected) */
   .char-bubble {
     position: absolute;
-    left: 50%;
+    left: 22%;
     top: 30%;
     transform: translate(-50%, -100%);
     background: white;
@@ -317,8 +367,8 @@
     gap: 8px;
     padding: 10px 10px;
     border-radius: 10px;
-    border: 2px solid var(--border);
-    background: white;
+    border: 1.5px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.4);
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
@@ -332,7 +382,7 @@
     transition: opacity 0.25s;
     border-radius: 8px;
   }
-  .tier-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .tier-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 
   .tier-icon {
     font-size: 18px;
@@ -360,7 +410,8 @@
   .tier-sub {
     font-size: 10px;
     font-weight: 500;
-    opacity: 0.6;
+    color: var(--text-light);
+    opacity: 0.7;
     line-height: 1.2;
   }
   .tier-model {
@@ -370,6 +421,7 @@
     padding: 2px 6px;
     border-radius: 4px;
     background: rgba(0,0,0,0.05);
+    color: var(--text-light);
     position: relative;
     z-index: 1;
     white-space: nowrap;
@@ -377,30 +429,30 @@
 
   /* Quick Check tier */
   .tier-btn[data-tier="quick"] { --tier-color: var(--tier-quick); }
-  .tier-btn[data-tier="quick"]::before { background: linear-gradient(135deg, rgba(61,155,143,0.06) 0%, rgba(94,207,191,0.06) 100%); }
-  .tier-btn[data-tier="quick"].active { border-color: var(--tier-quick); background: #F0FAF8; }
+  .tier-btn[data-tier="quick"]::before { background: linear-gradient(135deg, rgba(61,155,143,0.08) 0%, rgba(94,207,191,0.04) 100%); }
+  .tier-btn[data-tier="quick"].active { border-color: var(--tier-quick); background: rgba(61,155,143,0.06); }
   .tier-btn[data-tier="quick"].active::before { opacity: 1; }
   .tier-btn[data-tier="quick"] .tier-name { color: var(--sage-deep); }
-  .tier-btn[data-tier="quick"] .speed-dot { background: var(--tier-quick); }
-  .tier-btn[data-tier="quick"].active { box-shadow: 0 2px 16px rgba(61,155,143,0.15); }
+  .tier-btn[data-tier="quick"] .speed-dot { background: var(--sage); }
+  .tier-btn[data-tier="quick"].active { box-shadow: 0 2px 12px rgba(61,155,143,0.15); }
 
   /* Deep Dive tier */
   .tier-btn[data-tier="deep"] { --tier-color: var(--tier-deep); }
-  .tier-btn[data-tier="deep"]::before { background: linear-gradient(135deg, rgba(124,92,252,0.06) 0%, rgba(160,132,255,0.06) 100%); }
-  .tier-btn[data-tier="deep"].active { border-color: var(--tier-deep); background: #F6F3FF; }
+  .tier-btn[data-tier="deep"]::before { background: linear-gradient(135deg, rgba(124,92,252,0.08) 0%, rgba(160,132,255,0.04) 100%); }
+  .tier-btn[data-tier="deep"].active { border-color: var(--tier-deep); background: rgba(124,92,252,0.06); }
   .tier-btn[data-tier="deep"].active::before { opacity: 1; }
-  .tier-btn[data-tier="deep"] .tier-name { color: #5A3EC8; }
-  .tier-btn[data-tier="deep"] .speed-dot { background: var(--tier-deep); }
-  .tier-btn[data-tier="deep"].active { box-shadow: 0 2px 16px rgba(124,92,252,0.15); }
+  .tier-btn[data-tier="deep"] .tier-name { color: #7C5CFC; }
+  .tier-btn[data-tier="deep"] .speed-dot { background: #7C5CFC; }
+  .tier-btn[data-tier="deep"].active { box-shadow: 0 2px 12px rgba(124,92,252,0.15); }
 
   /* BIOS tier */
   .tier-btn[data-tier="bios"] { --tier-color: var(--tier-bios); }
-  .tier-btn[data-tier="bios"]::before { background: linear-gradient(135deg, rgba(232,168,50,0.06) 0%, rgba(252,234,187,0.1) 100%); }
-  .tier-btn[data-tier="bios"].active { border-color: var(--tier-bios); background: #FFFCF2; }
+  .tier-btn[data-tier="bios"]::before { background: linear-gradient(135deg, rgba(232,168,50,0.08) 0%, rgba(252,234,187,0.05) 100%); }
+  .tier-btn[data-tier="bios"].active { border-color: var(--tier-bios); background: rgba(232,168,50,0.06); }
   .tier-btn[data-tier="bios"].active::before { opacity: 1; }
-  .tier-btn[data-tier="bios"] .tier-name { color: #B07D1A; }
-  .tier-btn[data-tier="bios"] .speed-dot { background: var(--tier-bios); }
-  .tier-btn[data-tier="bios"].active { box-shadow: 0 2px 16px rgba(232,168,50,0.15); }
+  .tier-btn[data-tier="bios"] .tier-name { color: #C08A20; }
+  .tier-btn[data-tier="bios"] .speed-dot { background: #D49628; }
+  .tier-btn[data-tier="bios"].active { box-shadow: 0 2px 12px rgba(232,168,50,0.15); }
   .tier-btn[data-tier="bios"] .bios-badge {
     font-family: 'JetBrains Mono', monospace;
     font-size: 8px;
@@ -424,35 +476,36 @@
   }
   .search-input {
     flex: 1;
-    border: 2.5px solid var(--sage);
+    border: 1.5px solid rgba(255,255,255,0.5);
     border-right: none;
     border-radius: 12px 0 0 12px;
-    padding: 16px 20px;
-    font-size: 16px;
+    padding: 14px 18px;
+    font-size: 15px;
     font-family: 'Nunito', sans-serif;
-    color: var(--charcoal);
-    background: #fff;
+    color: var(--text);
+    background: rgba(255,255,255,0.45);
     outline: none;
     transition: all 0.25s;
     font-weight: 500;
   }
-  .search-input::placeholder { color: #bbb; font-weight: 400; font-size: 14px; }
+  .search-input::placeholder { color: rgba(44,44,58,0.45); font-weight: 400; font-size: 13px; }
   .search-input:focus {
-    border-color: var(--sage-deep);
-    box-shadow: 0 0 0 4px rgba(61,155,143,0.08);
+    border-color: var(--sage);
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 0 0 3px rgba(61,155,143,0.1);
   }
   /* Tier-colored search border */
-  .search-row.tier-deep .search-input { border-color: var(--tier-deep); }
-  .search-row.tier-deep .search-input:focus { box-shadow: 0 0 0 4px rgba(124,92,252,0.08); }
-  .search-row.tier-deep .ask-btn { background: linear-gradient(180deg, #8B6FFC 0%, #5A3EC8 100%); border-color: #5A3EC8; }
-  .search-row.tier-bios .search-input { border-color: var(--tier-bios); }
-  .search-row.tier-bios .search-input:focus { box-shadow: 0 0 0 4px rgba(232,168,50,0.08); }
-  .search-row.tier-bios .ask-btn { background: linear-gradient(180deg, #F0B942 0%, #B07D1A 100%); border-color: #B07D1A; }
+  .search-row.tier-deep .search-input { border-color: rgba(124,92,252,0.4); }
+  .search-row.tier-deep .search-input:focus { box-shadow: 0 0 0 3px rgba(124,92,252,0.12); }
+  .search-row.tier-deep .ask-btn { background: linear-gradient(180deg, #8B6FFC 0%, #5A3EC8 100%); border-color: #5A3EC8; box-shadow: 0 4px 16px rgba(124,92,252,0.2); }
+  .search-row.tier-bios .search-input { border-color: rgba(232,168,50,0.4); }
+  .search-row.tier-bios .search-input:focus { box-shadow: 0 0 0 3px rgba(232,168,50,0.12); }
+  .search-row.tier-bios .ask-btn { background: linear-gradient(180deg, #F0B942 0%, #B07D1A 100%); border-color: #B07D1A; box-shadow: 0 4px 16px rgba(232,168,50,0.2); }
 
   .ask-btn {
     background: linear-gradient(180deg, #4DB8A8 0%, #2A7A6F 100%);
     color: white;
-    border: 2.5px solid var(--sage-deep);
+    border: 1.5px solid var(--sage-deep);
     border-radius: 0 12px 12px 0;
     padding: 16px 34px;
     font-size: 17px;
@@ -461,28 +514,28 @@
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(42,122,111,0.2);
+    box-shadow: 0 0 16px rgba(94,207,191,0.25);
   }
-  .ask-btn:hover { filter: brightness(1.08); box-shadow: 0 4px 16px rgba(42,122,111,0.3); }
+  .ask-btn:hover { filter: brightness(1.08); box-shadow: 0 0 24px rgba(94,207,191,0.35); }
   .ask-btn:active { transform: scale(0.97); }
 
   /* Category tabs */
   .cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
   .cat-tab {
-    background: var(--panel);
-    border: 1.5px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: 7px;
     padding: 7px 13px;
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.5);
     cursor: pointer;
     transition: all 0.15s;
     text-transform: uppercase;
     letter-spacing: 0.4px;
   }
-  .cat-tab:hover { border-color: var(--sage); color: var(--sage-deep); background: var(--sage-pale); }
-  .cat-tab.active { background: var(--sage); color: white; border-color: var(--sage); box-shadow: 0 2px 8px rgba(61,155,143,0.2); }
+  .cat-tab:hover { border-color: rgba(94,207,191,0.3); color: var(--sage-glow); background: rgba(94,207,191,0.06); }
+  .cat-tab.active { background: var(--sage); color: white; border-color: var(--sage); box-shadow: 0 2px 8px rgba(61,155,143,0.3); }
 
   /* ═══ BIOS MODAL ═══ */
   .bios-overlay {
@@ -567,6 +620,269 @@
     background: none;
     border: none;
     font-family: 'Nunito', sans-serif;
+  }
+
+  /* ═══ PRICING MODAL ═══ */
+  .pricing-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(26,26,38,0.5);
+    backdrop-filter: blur(8px);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s;
+  }
+  .pricing-overlay.show { display: flex; }
+  .pricing-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 32px 28px 24px;
+    max-width: 620px;
+    width: 94%;
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+    animation: modalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .pricing-modal .pm-icon { font-size: 40px; margin-bottom: 8px; }
+  .pricing-modal h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .pricing-modal .pm-sub {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  /* Subscription tier cards */
+  .pm-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pm-tier-card {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 12px 16px;
+    text-align: center;
+    transition: all 0.15s;
+    position: relative;
+    background: white;
+    cursor: pointer;
+  }
+  .pm-tier-card:hover {
+    border-color: var(--sage);
+    box-shadow: 0 4px 16px rgba(61,155,143,0.12);
+  }
+  .pm-tier-card.featured {
+    border-color: var(--gold);
+    box-shadow: 0 4px 20px rgba(232,168,50,0.18);
+    background: linear-gradient(180deg, #FFFCF5 0%, white 40%);
+  }
+  .pm-popular-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--gold) 0%, #D49628 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .pm-tier-name {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .pm-tier-price {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--sage-dark);
+    margin-bottom: 2px;
+  }
+  .pm-tier-price span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+  }
+  .pm-tier-credits {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+  .pm-tier-detail {
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    min-height: 34px;
+  }
+  .pm-tier-btn {
+    background: linear-gradient(180deg, var(--sage) 0%, var(--sage-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.15s;
+  }
+  .pm-tier-btn:hover { filter: brightness(1.08); }
+  .pm-tier-card.featured .pm-tier-btn {
+    background: linear-gradient(180deg, var(--gold) 0%, #D49628 100%);
+  }
+
+  /* Credit packs divider */
+  .pm-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pm-divider::before, .pm-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Credit packs */
+  .pm-packs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .pm-pack {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    background: white;
+    min-width: 100px;
+  }
+  .pm-pack:hover {
+    border-color: var(--sage);
+    box-shadow: 0 2px 10px rgba(61,155,143,0.1);
+  }
+  .pm-pack.best-value {
+    border-color: var(--tier-deep);
+    background: linear-gradient(180deg, rgba(124,92,252,0.04) 0%, white 60%);
+  }
+  .pm-pack-badge {
+    position: absolute;
+    top: -8px;
+    right: -6px;
+    background: linear-gradient(135deg, var(--tier-deep) 0%, #6344D9 100%);
+    color: white;
+    font-size: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+  .pm-pack-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
+  }
+  .pm-pack-price {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .pm-pack-unit {
+    font-size: 10px;
+    color: var(--text-light);
+  }
+
+  /* Free credits banner */
+  .pm-free-banner {
+    background: var(--sage-pale);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+  }
+  .pm-free-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    margin-bottom: 8px;
+  }
+  .pm-free-btn {
+    background: linear-gradient(180deg, var(--sage) 0%, var(--sage-deep) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pm-free-btn:hover { filter: brightness(1.08); box-shadow: 0 3px 12px rgba(61,155,143,0.25); }
+  .pm-dismiss {
+    font-size: 12px;
+    color: var(--text-light);
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    margin-top: 4px;
+  }
+
+  /* Credit badge next to search */
+  .credit-badge {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    background: rgba(232,168,50,0.12);
+    color: #B07D1A;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    margin-left: 8px;
+    white-space: nowrap;
+    font-family: 'Nunito', sans-serif;
+  }
+  .credit-badge.visible { display: inline-flex; }
+
+  @media (max-width: 560px) {
+    .pricing-modal { padding: 24px 16px 20px; }
+    .pm-tiers { grid-template-columns: 1fr; gap: 10px; }
+    .pm-tier-detail { min-height: auto; }
+    .pm-packs { flex-direction: column; align-items: center; }
+    .pm-pack { width: 80%; }
   }
 
   /* ═══ RESPONSE AREA ═══ */
@@ -751,21 +1067,56 @@
 
   /* ═══ RESPONSIVE ═══ */
   @media (max-width: 900px) {
-    .scene-container { height: clamp(600px, 80vh, 800px); }
+    .scene-container { height: clamp(440px, 62vh, 600px); }
     .scene-overlay {
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
       padding: 16px 16px 24px;
     }
-    .overlay-input { width: 100%; max-width: 520px; margin-right: 0; }
-    .overlay-brand .logo .dr,
-    .overlay-brand .logo .icu-name { font-size: 38px; }
+    .monitor-frame {
+      position: absolute;
+      left: 50%;
+      right: auto;
+      bottom: 8%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 380px;
+    }
+    .monitor-bezel {
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+    .monitor-screen { padding: 16px 16px 12px; }
+    .search-input { padding: 12px 14px; font-size: 14px; }
+    .ask-btn { padding: 12px 24px; font-size: 15px; }
     .bottom-sections { flex-direction: column; padding: 0 20px 20px; }
     .sidebar { width: 100%; }
     .response-area { padding: 0 20px 20px; }
     .tier-model { display: none; }
     .tier-btn { padding: 8px 6px; }
+    .tier-name { font-size: 12px; }
+    .tier-sub { font-size: 9px; }
+    .scene-brand { top: 10px; left: 14px; }
+    .scene-brand .logo .ask { font-size: 14px; }
+    .scene-brand .logo .dr,
+    .scene-brand .logo .icu-name { font-size: 28px; }
+    .scene-brand .tagline { font-size: 10px; }
+    .topbar { padding: 0 12px; height: 36px; }
+    .topbar a { padding: 2px 10px; font-size: 11px; }
+    .topbar .badge { font-size: 8px; padding: 3px 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .scene-container { height: clamp(400px, 60vh, 540px); }
+    .monitor-frame {
+      width: 94%;
+      bottom: 5%;
+    }
+    .monitor-screen { padding: 12px 12px 10px; }
+    .tier-selector { gap: 4px; }
+    .scene-brand .logo .dr,
+    .scene-brand .logo .icu-name { font-size: 24px; }
   }
 </style>
 </head>
@@ -795,41 +1146,46 @@
       <div class="loading-status" id="loading-status">Setting up the office...</div>
     </div>
   </div>
-  <div class="scene-overlay">
-    <div class="overlay-brand">
-      <div class="logo">
-        <span class="ask">Ask</span>
-        <span class="dr">Dr.</span><span class="icu-name">ICU</span>
-        <span class="tm">&#8482;</span>
-      </div>
-      <div class="tagline">I See You &#8212; AI Health Navigator</div>
+  <div class="scene-brand">
+    <div class="logo">
+      <span class="ask">Ask</span>
+      <span class="dr">Dr.</span><span class="icu-name">ICU</span>
+      <span class="tm">&#8482;</span>
     </div>
-    <div class="overlay-input">
-      <div class="tier-selector" id="tier-selector">
-        <div class="tier-btn active" data-tier="quick">
-          <div class="tier-icon"><span class="speed-dot"></span><span class="speed-dot"></span></div>
-          <div class="tier-label">
-            <div class="tier-name">Quick Check</div>
-            <div class="tier-sub">Instant answers</div>
+    <div class="tagline">I See You &mdash; AI Health Navigator</div>
+  </div>
+  <div class="scene-overlay">
+    <div class="char-bubble" id="char-bubble">I see you! &#127807;</div>
+    <div class="monitor-frame">
+      <div class="monitor-bezel">
+        <div class="monitor-screen">
+          <div class="tier-selector" id="tier-selector">
+            <div class="tier-btn active" data-tier="quick">
+              <div class="tier-icon"><span class="speed-dot"></span><span class="speed-dot"></span></div>
+              <div class="tier-label">
+                <div class="tier-name">Quick Check Up</div>
+                <div class="tier-sub">Instant answers</div>
+              </div>
+              <div class="tier-model">sonnet</div>
+            </div>
+            <div class="tier-btn" data-tier="bios">
+              <div class="tier-icon">&#128272;</div>
+              <div class="tier-label">
+                <div class="tier-name">Deep Research</div>
+                <div class="tier-sub">BIOS-powered</div>
+              </div>
+              <div class="bios-badge">BIOS</div>
+            </div>
           </div>
-          <div class="tier-model">sonnet</div>
-        </div>
-        <div class="tier-btn" data-tier="bios">
-          <div class="tier-icon">&#128272;</div>
-          <div class="tier-label">
-            <div class="tier-name">Deep Research</div>
-            <div class="tier-sub">BIOS-powered</div>
+          <div class="search-row" id="search-row">
+            <input type="text" class="search-input" id="search-input" placeholder="How can I help you today?" autocomplete="off">
+            <span class="credit-badge" id="credit-badge">&#128300; <span id="credit-count">3</span> credits</span>
+            <button class="ask-btn" id="ask-btn">Ask!</button>
           </div>
-          <div class="bios-badge">BIOS</div>
         </div>
-      </div>
-      <div class="search-row" id="search-row">
-        <input type="text" class="search-input" id="search-input" placeholder="How can I help you today?" autocomplete="off">
-        <button class="ask-btn" id="ask-btn">Ask!</button>
       </div>
     </div>
   </div>
-  <div class="char-bubble" id="char-bubble">I see you! &#127807;</div>
 </div>
 
 <!-- BIOS MODAL -->
@@ -846,6 +1202,68 @@
     </div>
     <button class="bios-connect-btn" id="bios-connect-btn">Connect BIOS Wallet</button>
     <button class="bios-dismiss" id="bios-dismiss">Maybe later</button>
+  </div>
+</div>
+
+<!-- PRICING MODAL -->
+<div class="pricing-overlay" id="pricing-overlay">
+  <div class="pricing-modal">
+    <div class="pm-icon">&#128300;</div>
+    <h2>Deep Research</h2>
+    <p class="pm-sub">AI-powered health analysis that goes beyond surface answers</p>
+
+    <div class="pm-tiers">
+      <div class="pm-tier-card" data-plan="starter">
+        <div class="pm-tier-name">Starter</div>
+        <div class="pm-tier-price">$9<span>/mo</span></div>
+        <div class="pm-tier-credits">10 credits/month</div>
+        <div class="pm-tier-detail">$0.90 per query<br>Standard priority</div>
+        <button class="pm-tier-btn">Choose Starter</button>
+      </div>
+      <div class="pm-tier-card featured" data-plan="pro">
+        <div class="pm-popular-badge">Most Popular</div>
+        <div class="pm-tier-name">Pro</div>
+        <div class="pm-tier-price">$19<span>/mo</span></div>
+        <div class="pm-tier-credits">30 credits/month</div>
+        <div class="pm-tier-detail">~$0.63/query &middot; 30% savings<br>Priority queue &middot; Rollover up to 30</div>
+        <button class="pm-tier-btn">Choose Pro</button>
+      </div>
+      <div class="pm-tier-card" data-plan="unlimited">
+        <div class="pm-tier-name">Unlimited</div>
+        <div class="pm-tier-price">$39<span>/mo</span></div>
+        <div class="pm-tier-credits">Unlimited</div>
+        <div class="pm-tier-detail">Priority queue<br>Early access to new features</div>
+        <button class="pm-tier-btn">Choose Unlimited</button>
+      </div>
+    </div>
+
+    <div class="pm-divider">or buy credits</div>
+
+    <div class="pm-packs">
+      <div class="pm-pack" data-pack="5">
+        <div class="pm-pack-amount">5 credits</div>
+        <div class="pm-pack-price">$6</div>
+        <div class="pm-pack-unit">$1.20 each</div>
+      </div>
+      <div class="pm-pack best-value" data-pack="15">
+        <div class="pm-pack-badge">Best Value</div>
+        <div class="pm-pack-amount">15 credits</div>
+        <div class="pm-pack-price">$14</div>
+        <div class="pm-pack-unit">$0.93 each</div>
+      </div>
+      <div class="pm-pack" data-pack="50">
+        <div class="pm-pack-amount">50 credits</div>
+        <div class="pm-pack-price">$35</div>
+        <div class="pm-pack-unit">$0.70 each</div>
+      </div>
+    </div>
+
+    <div class="pm-free-banner" id="pm-free-banner">
+      <div class="pm-free-text" id="pm-free-text">&#127873; You have 3 free credits remaining!</div>
+      <button class="pm-free-btn" id="pm-free-btn">Use a Free Credit Instead</button>
+    </div>
+
+    <button class="pm-dismiss" id="pm-dismiss">Maybe later</button>
   </div>
 </div>
 
@@ -927,6 +1345,10 @@ class SceneManager {
     this._monitorState = 0;
     this._contactShadow = null;
     this._particles = null;
+    this._droneMonitor = null;
+    this._droneScreenCenter = new THREE.Vector3();
+    this._dronePropellers = [];
+    this._droneBaseY = 0;
 
     // Performance
     this._isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -952,6 +1374,7 @@ class SceneManager {
     try { this._buildParticles(); }
     catch(e) { console.warn('Particles error:', e); }
     this._loadModel();
+    this._loadDroneMonitor();
     this._initEvents();
     this._animate();
   }
@@ -980,8 +1403,12 @@ class SceneManager {
     const aspect = this._canvas.clientWidth / this._canvas.clientHeight;
     const fov = this._isMobile ? 50 : 40;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 200);
-    this._baseCameraPos = new THREE.Vector3(-0.3, 1.4, this._isMobile ? 5.5 : 5.8);
-    this._baseCameraTarget = new THREE.Vector3(-0.1, 0.9, 0);
+    this._baseCameraPos = this._isMobile
+      ? new THREE.Vector3(-0.8, 1.3, 4.5)
+      : new THREE.Vector3(-0.3, 1.4, 5.8);
+    this._baseCameraTarget = this._isMobile
+      ? new THREE.Vector3(-0.6, 0.85, 0)
+      : new THREE.Vector3(-0.1, 0.9, 0);
     this._camera.position.copy(this._baseCameraPos);
     this._camera.lookAt(this._baseCameraTarget);
   }
@@ -1163,8 +1590,8 @@ class SceneManager {
     const desk = new THREE.Group();
     desk.position.set(0.0, 0, -0.3);
 
-    // Desk surface
-    const deskGeo = new THREE.BoxGeometry(2.5, 0.08, 1.2);
+    // Desk surface (extended width, slightly thicker)
+    const deskGeo = new THREE.BoxGeometry(3.0, 0.10, 1.2);
     const deskMat = new THREE.MeshStandardMaterial({ color: 0xFFF8EC, roughness: 0.5, metalness: 0.02 });
     const deskTop = new THREE.Mesh(deskGeo, deskMat);
     deskTop.position.y = 0.85;
@@ -1172,17 +1599,36 @@ class SceneManager {
     deskTop.receiveShadow = true;
     desk.add(deskTop);
 
-    // Desk legs
+    // Desk front lip (thin trim along front edge)
+    const lipGeo = new THREE.BoxGeometry(3.0, 0.04, 0.04);
+    const lipMat = new THREE.MeshStandardMaterial({ color: 0xD5CFC5, roughness: 0.5 });
+    const lip = new THREE.Mesh(lipGeo, lipMat);
+    lip.position.set(0, 0.83, 0.58);
+    desk.add(lip);
+
+    // Desk legs (slightly thicker, panel-style)
     const legMat = new THREE.MeshStandardMaterial({ color: 0xE0DBD2, roughness: 0.5 });
-    const legGeo = new THREE.BoxGeometry(0.07, 0.85, 0.9);
+    const legGeo = new THREE.BoxGeometry(0.08, 0.85, 1.0);
     const leg1 = new THREE.Mesh(legGeo, legMat);
-    leg1.position.set(-1.1, 0.425, 0);
+    leg1.position.set(-1.35, 0.425, 0);
     desk.add(leg1);
     const leg2 = new THREE.Mesh(legGeo, legMat);
-    leg2.position.set(1.1, 0.425, 0);
+    leg2.position.set(1.35, 0.425, 0);
     desk.add(leg2);
 
-    // Monitor frame
+    // Desk back panel (subtle, connects legs)
+    const backPanelGeo = new THREE.BoxGeometry(2.62, 0.55, 0.03);
+    const backPanel = new THREE.Mesh(backPanelGeo, legMat);
+    backPanel.position.set(0, 0.57, -0.48);
+    desk.add(backPanel);
+
+    // Drone monitor anchor point (invisible — drone GLB floats above this)
+    const droneAnchor = new THREE.Object3D();
+    droneAnchor.position.set(0, 1.45, -0.3);
+    desk.add(droneAnchor);
+    this._droneAnchor = droneAnchor;
+
+    // Heartbeat monitor on desk
     const monFrameGeo = new THREE.BoxGeometry(0.85, 0.55, 0.04);
     const monFrameMat = new THREE.MeshStandardMaterial({ color: 0x2C2C3A, metalness: 0.3, roughness: 0.4 });
     const monFrame = new THREE.Mesh(monFrameGeo, monFrameMat);
@@ -1190,13 +1636,11 @@ class SceneManager {
     monFrame.castShadow = true;
     desk.add(monFrame);
 
-    // Monitor stand
     const standGeo = new THREE.CylinderGeometry(0.04, 0.06, 0.25, 8);
     const standMesh = new THREE.Mesh(standGeo, monFrameMat);
     standMesh.position.set(0, 0.97, -0.3);
     desk.add(standMesh);
 
-    // Monitor screen (animated shader)
     const screenGeo = new THREE.PlaneGeometry(0.77, 0.47);
     const screenMat = new THREE.ShaderMaterial({
       uniforms: {
@@ -1209,24 +1653,38 @@ class SceneManager {
       fragmentShader: `uniform float uTime; uniform int uState; uniform vec3 uColor;
         varying vec2 vUv;
         void main() {
-          vec3 bg = vec3(0.102, 0.102, 0.149);
-          // Grid
-          vec2 p = vUv * 20.0;
+          vec3 bg = vec3(0.08, 0.09, 0.13);
+          // Subtle grid
+          vec2 p = vUv * 16.0;
           float gx = abs(fract(p.x) - 0.5) / fwidth(p.x);
           float gy = abs(fract(p.y) - 0.5) / fwidth(p.y);
-          float grid = (1.0 - min(min(gx, gy), 1.0)) * 0.08;
-          vec3 col = bg + vec3(grid);
+          float grid = (1.0 - min(min(gx, gy), 1.0)) * 0.06;
+          vec3 col = bg + vec3(grid) * vec3(0.4, 0.8, 0.7);
 
-          // Waveform
-          float freq = uState == 1 ? 8.0 : (uState == 2 ? 4.0 : 5.0);
-          float speed = uState == 1 ? 3.0 : (uState == 2 ? 1.5 : 2.0);
-          float amp = uState == 1 ? 0.18 : (uState == 2 ? 0.12 : 0.1);
-          float wave = sin(vUv.x * freq * 6.28 - uTime * speed) * amp;
-          float heartbeat = exp(-mod(vUv.x * 3.0 - uTime * 0.8, 3.0) * 2.0) * 0.15;
-          float y = 0.5 + wave + heartbeat;
-          float line = smoothstep(0.015, 0.0, abs(vUv.y - y));
-          float glow = smoothstep(0.06, 0.0, abs(vUv.y - y)) * 0.3;
-          col += uColor * (line + glow);
+          // ECG-style heartbeat waveform
+          float speed = uState == 1 ? 2.5 : (uState == 2 ? 1.2 : 1.6);
+          float t = fract(vUv.x * 2.0 - uTime * speed * 0.3);
+
+          // Flat baseline with sharp ECG spikes
+          float ecg = 0.0;
+          // P wave (small bump)
+          ecg += 0.04 * exp(-pow((t - 0.15) * 18.0, 2.0));
+          // QRS complex (sharp spike)
+          ecg -= 0.06 * exp(-pow((t - 0.3) * 30.0, 2.0));
+          ecg += 0.22 * exp(-pow((t - 0.35) * 25.0, 2.0));
+          ecg -= 0.08 * exp(-pow((t - 0.4) * 30.0, 2.0));
+          // T wave (broad bump)
+          ecg += 0.06 * exp(-pow((t - 0.55) * 12.0, 2.0));
+
+          float y = 0.5 + ecg;
+          float line = smoothstep(0.02, 0.0, abs(vUv.y - y));
+          float glow = smoothstep(0.08, 0.0, abs(vUv.y - y)) * 0.4;
+          col += uColor * (line * 1.2 + glow);
+
+          // Bright trailing dot
+          float dotX = fract(-uTime * speed * 0.3) * 0.5 + 0.5;
+          float dotDist = length(vec2(vUv.x - dotX, (vUv.y - y) * 2.0));
+          col += uColor * 0.6 * exp(-dotDist * dotDist * 800.0);
 
           // Checkmark for celebrating state
           if (uState == 3) {
@@ -1237,7 +1695,10 @@ class SceneManager {
           }
 
           // Scanlines
-          col *= 0.95 + 0.05 * sin(vUv.y * 200.0);
+          col *= 0.96 + 0.04 * sin(vUv.y * 180.0);
+          // Slight vignette
+          float vig = 1.0 - 0.3 * length(vUv - 0.5);
+          col *= vig;
           gl_FragColor = vec4(col, 1.0);
         }`
     });
@@ -1246,20 +1707,40 @@ class SceneManager {
     screen.position.set(0, 1.17, -0.279);
     desk.add(screen);
 
-    // Plant pot
-    const potGeo = new THREE.CylinderGeometry(0.07, 0.09, 0.14, 12);
-    const potMat = new THREE.MeshStandardMaterial({ color: 0xE0DBD2, roughness: 0.8 });
-    const pot = new THREE.Mesh(potGeo, potMat);
-    pot.position.set(1.0, 0.96, 0.2);
-    desk.add(pot);
-
-    // Plant foliage
-    const leafGeo = new THREE.IcosahedronGeometry(0.13, 1);
-    const leafMat = new THREE.MeshStandardMaterial({ color: 0x3D9B8F, roughness: 0.9 });
-    const foliage = new THREE.Mesh(leafGeo, leafMat);
-    foliage.position.set(1.0, 1.12, 0.2);
-    desk.add(foliage);
-    this._foliage = foliage;
+    // Duck on desk (replaces plant)
+    this._duck = null;
+    const duckLoader = new GLTFLoader();
+    duckLoader.load('public/duck.glb', (gltf) => {
+      this._duck = gltf.scene;
+      this._duck.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      // Scale duck to sit nicely on desk (bigger)
+      const duckBox = new THREE.Box3().setFromObject(this._duck);
+      const duckSize = duckBox.getSize(new THREE.Vector3());
+      const duckScale = 0.45 / duckSize.y;
+      this._duck.scale.setScalar(duckScale);
+      // Recompute after scale
+      duckBox.setFromObject(this._duck);
+      const duckMin = duckBox.min;
+      const duckCenter = duckBox.getCenter(new THREE.Vector3());
+      const duckX = this._isMobile ? 0.8 : 1.15;
+      this._duck.position.set(
+        duckX - duckCenter.x + this._duck.position.x,
+        0.89 - duckMin.y + this._duck.position.y,
+        0.2 - duckCenter.z + this._duck.position.z
+      );
+      // Slight rotation so it's not perfectly straight
+      this._duck.rotation.y = -0.3;
+      this._duck.rotation.z = 0.04;
+      desk.add(this._duck);
+      console.log('Duck loaded on desk');
+    }, undefined, (err) => {
+      console.warn('Duck GLB load failed:', err);
+    });
 
     // Pill bottles
     const pillGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.10, 10);
@@ -1509,7 +1990,7 @@ class SceneManager {
       this._model.position.z = 0.5 - newCenter.z + this._model.position.z;
 
       // Rotate slightly toward the camera so he faces the viewer
-      this._model.rotation.y = 0.0;
+      this._model.rotation.y = 0.15;
 
       this._characterHeight = size.y * scale;
       this._modelBasePos.copy(this._model.position);
@@ -1584,6 +2065,77 @@ class SceneManager {
     setTimeout(() => {
       if (typeof showBubble === 'function') showBubble("I see you! Ask me anything " + String.fromCodePoint(0x1F33F));
     }, 1500);
+  }
+
+  // ─── DRONE MONITOR LOADING ───
+  _loadDroneMonitor() {
+    const loader = new GLTFLoader();
+    loader.load('public/drone-monitor.glb', (gltf) => {
+      this._droneMonitor = gltf.scene;
+
+      // Debug: log all mesh names so we know what Meshy generated
+      console.log('Drone Monitor — mesh names:');
+      this._droneMonitor.traverse(child => {
+        if (child.isMesh || child.isGroup) {
+          console.log(`  ${child.type}: "${child.name}"`);
+        }
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+
+      // Find propeller meshes by name (Meshy typically names them with propeller/rotor/prop/blade)
+      this._dronePropellers = [];
+      this._droneMonitor.traverse(child => {
+        if (child.isMesh) {
+          const n = child.name.toLowerCase();
+          if (n.includes('propeller') || n.includes('rotor') || n.includes('prop') || n.includes('blade') || n.includes('fan')) {
+            this._dronePropellers.push(child);
+            console.log(`  Found propeller: "${child.name}"`);
+          }
+        }
+      });
+
+      // Auto-scale to roughly match old monitor dimensions (~0.85 wide)
+      const box = new THREE.Box3().setFromObject(this._droneMonitor);
+      const size = box.getSize(new THREE.Vector3());
+      const targetWidth = 0.85;
+      const scale = targetWidth / Math.max(size.x, size.z);
+      this._droneMonitor.scale.setScalar(scale);
+
+      // Position above desk, using droneAnchor world position
+      const anchorWorldPos = new THREE.Vector3();
+      this._droneAnchor.getWorldPosition(anchorWorldPos);
+
+      // Recompute bounds after scale
+      box.setFromObject(this._droneMonitor);
+      const center = box.getCenter(new THREE.Vector3());
+
+      this._droneMonitor.position.set(
+        anchorWorldPos.x - center.x + this._droneMonitor.position.x,
+        anchorWorldPos.y - box.min.y + this._droneMonitor.position.y,
+        anchorWorldPos.z - center.z + this._droneMonitor.position.z
+      );
+
+      // Face the camera (front-facing). Try rotation — if model faces wrong way, adjust.
+      // Most Meshy models face +Z or -Z. We want the screen facing +Z (toward camera).
+      this._droneMonitor.rotation.y = 0;
+
+      this._droneBaseY = this._droneMonitor.position.y;
+      this._scene.add(this._droneMonitor);
+
+      // Use drone center as the 3D monitor reference for CSS projection
+      this._3dMonitor = this._droneMonitor;
+
+      console.log('Drone monitor loaded. Propellers found:', this._dronePropellers.length);
+      console.log('Drone position:', this._droneMonitor.position);
+      console.log('Drone scale:', this._droneMonitor.scale);
+
+    }, undefined, (err) => {
+      console.warn('Drone monitor GLB load failed:', err);
+      console.warn('CSS monitor will still work — it just won\'t track a 3D model.');
+    });
   }
 
   // ─── EVENTS ───
@@ -1777,10 +2329,27 @@ class SceneManager {
       this._particles.material.uniforms.uTime.value = elapsed;
     }
 
-    // ── Foliage sway ──
-    if (this._foliage) {
-      this._foliage.rotation.z = Math.sin(elapsed * 0.8) * 0.05;
-      this._foliage.rotation.x = Math.sin(elapsed * 0.6 + 1) * 0.03;
+    // ── Drone monitor: bobbing + propeller spin ──
+    if (this._droneMonitor) {
+      // Gentle bobbing
+      this._droneMonitor.position.y = this._droneBaseY + Math.sin(elapsed * 1.5) * 0.03;
+      // Subtle tilt
+      this._droneMonitor.rotation.z = Math.sin(elapsed * 0.8) * 0.015;
+      this._droneMonitor.rotation.x = Math.sin(elapsed * 0.6 + 1) * 0.01;
+
+      // Spin propellers
+      for (let i = 0; i < this._dronePropellers.length; i++) {
+        // Alternate spin direction for realism
+        const dir = i % 2 === 0 ? 1 : -1;
+        this._dronePropellers[i].rotation.y += dt * 25 * dir;
+      }
+    }
+
+    // (Search panel is now below the scene — no CSS projection needed)
+
+    // ── Duck sway (replaces foliage) ──
+    if (this._duck) {
+      this._duck.rotation.y = Math.sin(elapsed * 0.5) * 0.08;
     }
 
     // ── Character animation ──
@@ -1962,7 +2531,7 @@ const CHAR_IMG_SRC = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUND
 const TIERS = {
   quick: {
     model: 'claude-sonnet-4-20250514',
-    label: 'Quick Check',
+    label: 'Quick Check Up',
     tagClass: 'quick',
     cardClass: '',
     dotClass: 'tier-quick',
@@ -1996,18 +2565,65 @@ Rules: Never diagnose or prescribe. Always remind users to consult their healthc
 };
 
 let currentTier = 'quick';
+let userCredits = 3; // Free starter credits for Deep Research
 
 // ═══ TIER SELECTION ═══
 const tierBtns = document.querySelectorAll('.tier-btn');
 const searchRow = document.getElementById('search-row');
 const charWrap = null; // Removed: was char-wrap img wrapper
 const biosOverlay = document.getElementById('bios-overlay');
+const pricingOverlay = document.getElementById('pricing-overlay');
+const creditBadge = document.getElementById('credit-badge');
+const creditCountEl = document.getElementById('credit-count');
+
+function updateCreditBadge() {
+  creditCountEl.textContent = userCredits;
+  creditBadge.classList.toggle('visible', currentTier === 'bios' && userCredits > 0);
+}
+
+function updateFreeBanner() {
+  const banner = document.getElementById('pm-free-banner');
+  const text = document.getElementById('pm-free-text');
+  if (userCredits > 0) {
+    banner.style.display = '';
+    text.innerHTML = '&#127873; You have ' + userCredits + ' free credit' + (userCredits !== 1 ? 's' : '') + ' remaining!';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function showPricingModal() {
+  updateFreeBanner();
+  pricingOverlay.classList.add('show');
+}
+
+function hidePricingModal() {
+  pricingOverlay.classList.remove('show');
+}
+
+function activateBiosTier() {
+  currentTier = 'bios';
+  tierBtns.forEach(b => b.classList.toggle('active', b.dataset.tier === 'bios'));
+  searchRow.className = 'search-row tier-bios';
+  if (window._sceneManager) window._sceneManager.setTier('bios');
+  document.getElementById('search-input').placeholder = 'e.g. Deep analysis of insulin resistance mechanisms...';
+  updateCreditBadge();
+}
 
 function setTier(tier) {
+  // If selecting bios tier, check credits
+  if (tier === 'bios') {
+    if (userCredits > 0) {
+      activateBiosTier();
+    } else {
+      showPricingModal();
+    }
+    return;
+  }
+
   currentTier = tier;
   tierBtns.forEach(b => b.classList.toggle('active', b.dataset.tier === tier));
   searchRow.className = 'search-row' + (tier !== 'quick' ? ` tier-${tier}` : '');
-  // Update 3D scene tier (lighting, particles, monitor)
   if (window._sceneManager) {
     window._sceneManager.setTier(tier);
   }
@@ -2017,22 +2633,53 @@ function setTier(tier) {
     deep: 'e.g. Explain the full mechanism of insulin resistance...'
   };
   document.getElementById('search-input').placeholder = placeholders[tier] || placeholders.quick;
+  updateCreditBadge();
 }
 
 tierBtns.forEach(btn => {
   btn.addEventListener('click', () => setTier(btn.dataset.tier));
 });
 
+// ═══ BIOS MODAL ═══
 document.getElementById('bios-dismiss').addEventListener('click', () => {
   biosOverlay.classList.remove('show');
 });
 document.getElementById('bios-connect-btn').addEventListener('click', () => {
   biosOverlay.classList.remove('show');
-  // Future: wallet connect
   alert('BIOS wallet connect coming soon! This will integrate with the BIOS on-chain health protocol.');
 });
 biosOverlay.addEventListener('click', (e) => {
   if (e.target === biosOverlay) biosOverlay.classList.remove('show');
+});
+
+// ═══ PRICING MODAL ═══
+document.getElementById('pm-dismiss').addEventListener('click', hidePricingModal);
+pricingOverlay.addEventListener('click', (e) => {
+  if (e.target === pricingOverlay) hidePricingModal();
+});
+
+// Subscription tier buttons
+document.querySelectorAll('.pm-tier-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const plan = btn.closest('.pm-tier-card').dataset.plan;
+    hidePricingModal();
+    alert('Subscription plans coming soon! You selected the ' + plan.charAt(0).toUpperCase() + plan.slice(1) + ' plan.');
+  });
+});
+
+// Credit pack buttons
+document.querySelectorAll('.pm-pack').forEach(pack => {
+  pack.addEventListener('click', () => {
+    const amount = pack.dataset.pack;
+    hidePricingModal();
+    alert('Credit packs coming soon! You selected ' + amount + ' credits.');
+  });
+});
+
+// Use free credit button
+document.getElementById('pm-free-btn').addEventListener('click', () => {
+  hidePricingModal();
+  activateBiosTier();
 });
 
 // ═══ BUBBLE SYSTEM ═══
@@ -2174,6 +2821,18 @@ function addResponseCard(type, content, tier) {
 
 async function askSage(question) {
   if (isProcessing || !question.trim()) return;
+
+  // Deep Research credit check
+  if (currentTier === 'bios') {
+    if (userCredits <= 0) {
+      showPricingModal();
+      return;
+    }
+    userCredits--;
+    updateCreditBadge();
+    updateFreeBanner();
+  }
+
   isProcessing = true;
 
   const q = question.trim();
