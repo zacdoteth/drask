@@ -1132,8 +1132,41 @@
     .monitor-screen { padding: 16px 16px 12px; }
     .search-input { padding: 12px 14px; font-size: 14px; }
     .ask-btn { padding: 12px 24px; font-size: 15px; }
-    .bottom-sections { flex-direction: column; padding: 0 20px 20px; }
+    .bottom-sections { flex-direction: column; padding: 0 16px 20px; gap: 16px; }
     .sidebar { width: 100%; }
+    .sidebar-title {
+      font-size: 16px;
+      text-align: center;
+      border-bottom: none;
+      margin-bottom: 8px;
+      padding-bottom: 0;
+    }
+    .sidebar-link {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .sidebar-link:hover, .sidebar-link:active {
+      background: var(--sage-pale);
+      border-color: var(--sage);
+    }
+    .sidebar-link .dot {
+      width: 8px; height: 8px; opacity: 0.7;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .trending-q {
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 6px;
+    }
+    .trending-q .arrow { opacity: 0.4; }
     .response-area { padding: 0 20px 20px; }
     .tier-model { display: none; }
     .tier-btn { padding: 8px 6px; }
