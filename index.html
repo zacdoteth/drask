@@ -1415,8 +1415,6 @@ class SceneManager {
     this._initScene();
     this._initLights();
     // Post-processing disabled — bloom/vignette was over-saturating skin tones
-    // try { if (this._quality === 'high') this._initPostProcessing(); }
-    catch(e) { console.warn('Post-processing disabled:', e); this._composer = null; }
     try { this._buildEnvironment(); }
     catch(e) { console.warn('Environment build error:', e); }
     try { this._buildParticles(); }
