@@ -1124,7 +1124,7 @@
 
   /* ═══ RESPONSIVE ═══ */
   @media (max-width: 900px) {
-    .scene-container { height: clamp(540px, 78vh, 750px); }
+    .scene-container { height: calc(100vh - 36px); height: calc(100dvh - 36px); }
     .scene-overlay {
       flex-direction: column;
       align-items: center;
@@ -1135,7 +1135,7 @@
       position: absolute;
       left: 50%;
       right: auto;
-      bottom: 2%;
+      bottom: 12px;
       transform: translateX(-50%);
       width: 90%;
       max-width: 380px;
@@ -1204,7 +1204,6 @@
   }
 
   @media (max-width: 480px) {
-    .scene-container { height: clamp(520px, 75vh, 700px); }
     .monitor-frame {
       width: 94%;
       bottom: 1%;
@@ -1509,7 +1508,7 @@ class SceneManager {
       ? new THREE.Vector3(-1.5, 1.5, 4.5)
       : new THREE.Vector3(-0.3, 1.4, 5.8);
     this._baseCameraTarget = this._isMobile
-      ? new THREE.Vector3(-1.5, 1.1, 0.5)
+      ? new THREE.Vector3(-1.5, 0.95, 0.5)
       : new THREE.Vector3(-0.1, 0.9, 0);
     this._camera.position.copy(this._baseCameraPos);
     this._camera.lookAt(this._baseCameraTarget);
