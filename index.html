@@ -1414,7 +1414,8 @@ class SceneManager {
     this._initCamera();
     this._initScene();
     this._initLights();
-    try { if (this._quality === 'high') this._initPostProcessing(); }
+    // Post-processing disabled — bloom/vignette was over-saturating skin tones
+    // try { if (this._quality === 'high') this._initPostProcessing(); }
     catch(e) { console.warn('Post-processing disabled:', e); this._composer = null; }
     try { this._buildEnvironment(); }
     catch(e) { console.warn('Environment build error:', e); }
@@ -1436,7 +1437,7 @@ class SceneManager {
     });
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, this._quality === 'high' ? 2 : 1.5));
     this._renderer.toneMapping = THREE.LinearToneMapping;
-    this._renderer.toneMappingExposure = 0.62;
+    this._renderer.toneMappingExposure = 0.68;
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (this._quality === 'high') {
       this._renderer.shadowMap.enabled = true;
