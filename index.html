@@ -1177,7 +1177,7 @@
             <div class="tier-btn active" data-tier="quick">
               <div class="tier-icon"><span class="speed-dot"></span><span class="speed-dot"></span></div>
               <div class="tier-label">
-                <div class="tier-name">Quick Check Up</div>
+                <div class="tier-name">Quick Checkup</div>
                 <div class="tier-sub">Instant answers</div>
               </div>
               <div class="tier-model">sonnet</div>
@@ -2547,8 +2547,8 @@ const CHAR_IMG_SRC = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUND
 // ═══ TIER CONFIG ═══
 const TIERS = {
   quick: {
-    model: 'claude-sonnet-4-20250514',
-    label: 'Quick Check Up',
+    model: 'claude-sonnet-4-6',
+    label: 'Quick Checkup',
     tagClass: 'quick',
     cardClass: '',
     dotClass: 'tier-quick',
@@ -2701,31 +2701,29 @@ document.getElementById('pm-free-btn').addEventListener('click', () => {
 
 // ═══ BUBBLE SYSTEM ═══
 const drFacts = [
-  "Your nose can remember 50,000 different scents! \ud83d\udc43",
-  "Your body makes about 3.8 million cells every second.",
-  "Stomach acid is strong enough to dissolve metal. Your stomach lining replaces itself every 3-4 days!",
-  "The human brain uses 20% of your total oxygen \u2014 despite being only 2% of your body weight.",
-  "Your bones are about 5x stronger than steel of the same density. \ud83e\uddb4",
-  "You produce about 1 liter of saliva per day. That\u2019s 2 swimming pools in a lifetime!",
-  "Nerve impulses travel at up to 268 mph. Faster than a race car! \u26a1",
-  "Your heart beats about 100,000 times a day \u2014 that\u2019s 35 million times a year.",
-  "The cornea is the only part of the body with no blood supply \u2014 it gets oxygen directly from the air.",
-  "Your small intestine is about 20 feet long. Most digestion happens here, not the stomach!",
-  "Laughing increases blood flow by 20%. Laughter really is good medicine! \ud83d\ude04",
-  "You have about 60,000 miles of blood vessels. That could wrap around the Earth 2.5 times!",
-  "Your liver performs over 500 different functions. It\u2019s the ultimate multitasker.",
-  "Humans share 60% of their DNA with bananas. \ud83c\udf4c",
-  "Your body contains about 0.2mg of gold, mostly in your blood.",
-  "Babies are born with 270 bones. Adults have 206 \u2014 some fuse together as you grow!",
-  "The average person walks about 100,000 miles in a lifetime. That\u2019s 4 trips around the Earth! \ud83c\udf0d",
-  "Your eyes can distinguish about 10 million different colors.",
-  "Sneezes can travel up to 100 mph. Always cover up! \ud83e\udd27",
-  "The human body contains enough iron to make a 3-inch nail.",
-  "Your skin is your largest organ \u2014 about 20 square feet in adults.",
-  "Humans are the only animals that blush. It\u2019s actually a sign of empathy!",
-  "Your brain generates enough electricity to power a small lightbulb. \ud83d\udca1",
-  "The acid in your stomach is renewed every 3-4 days to prevent it from digesting itself.",
-  "Red blood cells can travel through your entire body in about 20 seconds.",
+  "Your nose remembers 50,000 scents!",
+  "Your body makes 3.8 million cells every second.",
+  "Stomach acid can dissolve metal!",
+  "Your brain uses 20% of all your oxygen.",
+  "Bones are 5x stronger than steel!",
+  "You make a liter of saliva every day.",
+  "Nerve signals travel at 268 mph!",
+  "Your heart beats 100,000 times a day.",
+  "Corneas get oxygen straight from the air.",
+  "Your small intestine is 20 feet long!",
+  "Laughing boosts blood flow by 20%.",
+  "60,000 miles of blood vessels inside you!",
+  "Your liver has over 500 jobs.",
+  "You share 60% of your DNA with bananas.",
+  "There's real gold in your blood!",
+  "Babies have 270 bones. Adults? Just 206.",
+  "Your eyes see 10 million colors.",
+  "Sneezes can hit 100 mph!",
+  "Enough iron in you to make a nail.",
+  "Your skin is your biggest organ.",
+  "Humans are the only animals that blush.",
+  "Your brain can power a small lightbulb!",
+  "Red blood cells loop your body in 20 seconds.",
 ];
 let factIndex = Math.floor(Math.random() * drFacts.length);
 
@@ -2802,10 +2800,10 @@ function showBubble(msg, duration, opts = {}) {
 // Staged like a Nintendo character greeting — each line breathes
 function runIntroSequence() {
   const sequence = [
-    { delay: 800,  msg: '...',                                    duration: 1000, instant: true },
-    { delay: 2200, msg: 'I see you!',                             duration: 2200 },
-    { delay: 5200, msg: "I'm Dr. ICU \u2014 your AI health navigator.", duration: 3200 },
-    { delay: 9400, msg: 'Ask me anything, or pick a topic below!', duration: 3500 },
+    { delay: 800,  msg: '...',                              duration: 1000, instant: true },
+    { delay: 2200, msg: 'Hey! I see you!',                  duration: 2200 },
+    { delay: 5200, msg: "I'm Dr. ICU, your health navigator.", duration: 3200 },
+    { delay: 9400, msg: 'Ask me anything!',                 duration: 3500 },
   ];
 
   sequence.forEach(({ delay, msg, duration, instant }) => {
