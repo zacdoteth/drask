@@ -1767,13 +1767,13 @@ class SceneManager {
       // Scale duck to sit nicely on desk (bigger)
       const duckBox = new THREE.Box3().setFromObject(this._duck);
       const duckSize = duckBox.getSize(new THREE.Vector3());
-      const duckScale = 0.45 / duckSize.y;
+      const duckScale = 0.4275 / duckSize.y;
       this._duck.scale.setScalar(duckScale);
       // Recompute after scale
       duckBox.setFromObject(this._duck);
       const duckMin = duckBox.min;
       const duckCenter = duckBox.getCenter(new THREE.Vector3());
-      const duckX = this._isMobile ? -0.35 : 1.15;
+      const duckX = this._isMobile ? -0.5 : 1.15;
       const duckZ = this._isMobile ? 0.15 : 0.2;
       this._duck.position.set(
         duckX - duckCenter.x + this._duck.position.x,
