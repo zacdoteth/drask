@@ -1773,14 +1773,15 @@ class SceneManager {
       duckBox.setFromObject(this._duck);
       const duckMin = duckBox.min;
       const duckCenter = duckBox.getCenter(new THREE.Vector3());
-      const duckX = this._isMobile ? 0.8 : 1.15;
+      const duckX = this._isMobile ? -0.35 : 1.15;
+      const duckZ = this._isMobile ? 0.15 : 0.2;
       this._duck.position.set(
         duckX - duckCenter.x + this._duck.position.x,
         0.89 - duckMin.y + this._duck.position.y,
-        0.2 - duckCenter.z + this._duck.position.z
+        duckZ - duckCenter.z + this._duck.position.z
       );
       // Slight rotation so it's not perfectly straight
-      this._duck.rotation.y = -0.3;
+      this._duck.rotation.y = this._isMobile ? 0.3 : -0.3;
       this._duck.rotation.z = 0.04;
       desk.add(this._duck);
       console.log('Duck loaded on desk');
@@ -2234,9 +2235,9 @@ class SceneManager {
     if (intersects.length > 0) {
       this.triggerClick();
       this.setState('celebrating');
-      if (typeof showBubble === 'function') {
-        const clickLines = ["Hey there!", "I see you! \uD83D\uDC4B", "That tickles!", "Hi friend!"];
-        showBubble(clickLines[Math.floor(Math.random() * clickLines.length)], 2000);
+      if (typeof showClickBubble === 'function') {
+        const clickLines = ["Hey there!", "I see you!", "That tickles!", "Hi friend!"];
+        showClickBubble(clickLines[Math.floor(Math.random() * clickLines.length)], 2000);
       }
       setTimeout(() => this.setState('idle'), 1500);
     }
@@ -2835,6 +2836,14 @@ function showBubble(msg, duration, opts = {}) {
 
 // ── Intro Sequence ──
 // Staged like a Nintendo character greeting — each line breathes
+let introTimers = [];
+let bubbleBusy = false; // true when a click/interaction bubble is playing
+
+function cancelIntroTimers() {
+  introTimers.forEach(t => clearTimeout(t));
+  introTimers = [];
+}
+
 function runIntroSequence() {
   const sequence = [
     { delay: 800,  msg: '...',                              duration: 1000, instant: true },
@@ -2844,22 +2853,31 @@ function runIntroSequence() {
   ];
 
   sequence.forEach(({ delay, msg, duration, instant }) => {
-    setTimeout(() => {
-      if (charState === 'idle') showBubble(msg, duration, { instant: !!instant });
+    const t = setTimeout(() => {
+      if (charState === 'idle' && !bubbleBusy) showBubble(msg, duration, { instant: !!instant });
     }, delay);
+    introTimers.push(t);
   });
 
   // After intro, start fact cycling
-  setTimeout(() => {
+  const t = setTimeout(() => {
     introComplete = true;
     startFactCycle();
   }, 14000);
+  introTimers.push(t);
+}
+
+function showClickBubble(msg, duration) {
+  cancelIntroTimers();
+  bubbleBusy = true;
+  showBubble(msg, duration);
+  setTimeout(() => { bubbleBusy = false; }, duration + 500);
 }
 
 function startFactCycle() {
   if (factCycleTimer) return;
   factCycleTimer = setInterval(() => {
-    if (charState === 'idle' && introComplete) {
+    if (charState === 'idle' && introComplete && !bubbleBusy) {
       showBubble(drFacts[factIndex], 6000);
       factIndex = (factIndex + 1) % drFacts.length;
     }
