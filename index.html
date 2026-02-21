@@ -1037,6 +1037,17 @@
     color: var(--sage);
     font-weight: 700;
   }
+  .a-body .a-link {
+    color: var(--sage-deep);
+    text-decoration: underline;
+    text-decoration-color: rgba(61,155,143,0.3);
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.15s;
+    word-break: break-word;
+  }
+  .a-body .a-link:hover {
+    text-decoration-color: var(--sage);
+  }
   .disclaimer {
     font-size: 11px; color: var(--text-light); margin-top: 14px;
     padding-top: 12px; border-top: 1px solid var(--border); font-style: italic;
@@ -1246,7 +1257,14 @@
       margin-bottom: 6px;
     }
     .trending-q .arrow { opacity: 0.4; }
-    .response-area { padding: 0 20px 20px; }
+    .response-area { padding: 0 14px 20px; }
+    .response-card { padding: 16px; }
+    .a-body { font-size: 14px; line-height: 1.75; }
+    .a-body strong, .a-body b { font-size: 15.5px; }
+    .a-body .a-h { font-size: 15px; margin: 14px 0 6px; }
+    .a-name { font-size: 13px; }
+    .a-role { font-size: 11px; }
+    .disclaimer { font-size: 10px; }
     .tier-model { display: none; }
     .tier-btn { padding: 8px 6px; }
     .tier-name { font-size: 12px; }
@@ -3033,6 +3051,8 @@ function formatMarkdown(text) {
     .replace(/^### (.+)$/gm, '<h4 class="a-h">$1</h4>')
     .replace(/^## (.+)$/gm, '<h3 class="a-h">$1</h3>')
     .replace(/^# (.+)$/gm, '<h3 class="a-h">$1</h3>')
+    // Links: [text](url) → <a>
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a class="a-link" href="$2" target="_blank" rel="noopener">$1</a>')
     // Bold: **text** → <strong>
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     // Italic: *text* → <em>
