@@ -98,7 +98,7 @@
     width: 100%;
     height: clamp(500px, 75vh, 900px);
     overflow: hidden;
-    background: #DFEFE8;
+    background: #B8DDD3;
   }
   #scene-canvas {
     display: block;
@@ -966,8 +966,8 @@ class SceneManager {
       powerPreference: 'high-performance'
     });
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, this._quality === 'high' ? 2 : 1.5));
-    this._renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this._renderer.toneMappingExposure = 0.85;
+    this._renderer.toneMapping = THREE.LinearToneMapping;
+    this._renderer.toneMappingExposure = 0.78;
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (this._quality === 'high') {
       this._renderer.shadowMap.enabled = true;
@@ -990,14 +990,14 @@ class SceneManager {
   // ─── SCENE ───
   _initScene() {
     this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color('#DFEFE8');
-    this._scene.fog = new THREE.Fog(0xDFEFE8, 8, 35);
+    this._scene.background = new THREE.Color('#B8DDD3');
+    this._scene.fog = new THREE.Fog(0xB8DDD3, 10, 40);
   }
 
   // ─── LIGHTS ───
   _initLights() {
     // Hemisphere ambient
-    const hemi = new THREE.HemisphereLight(0xE8F5F2, 0xF0EDE6, 0.35);
+    const hemi = new THREE.HemisphereLight(0xE8F5F2, 0xE0E4E2, 0.3);
     this._scene.add(hemi);
 
     // Key light (main shadow caster) — neutral white to avoid peachy cast
@@ -1082,8 +1082,8 @@ class SceneManager {
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       uniforms: {
-        uTopColor: { value: new THREE.Color('#C8E6DF') },
-        uBottomColor: { value: new THREE.Color('#FBF7EE') }
+        uTopColor: { value: new THREE.Color('#9ED4C8') },
+        uBottomColor: { value: new THREE.Color('#E8E2D6') }
       },
       vertexShader: `varying vec3 vWorldPos;
         void main() {
@@ -1114,7 +1114,7 @@ class SceneManager {
     // Floor
     const floorGeo = new THREE.PlaneGeometry(40, 40);
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0xEDE8E0,
+      color: 0xD5CFC5,
       roughness: 0.85,
       metalness: 0
     });
@@ -1365,7 +1365,7 @@ class SceneManager {
 
   // ─── PARTICLES ───
   _buildParticles() {
-    const count = this._quality === 'high' ? 200 : 60;
+    const count = this._quality === 'high' ? 80 : 40;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
@@ -1373,8 +1373,7 @@ class SceneManager {
     const offsets = new Float32Array(count);
 
     const teal = new THREE.Color('#3D9B8F');
-    const gold = new THREE.Color('#E8A832');
-    const cream = new THREE.Color('#FFFCF5');
+    const sageGlow = new THREE.Color('#5ECFBF');
 
     for (let i = 0; i < count; i++) {
       // Spread particles in a volume around the scene
@@ -1382,14 +1381,13 @@ class SceneManager {
       positions[i * 3 + 1] = Math.random() * 4;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 6;
 
-      // Color mix: 40% teal, 35% tier-color (starts teal), 25% cream
-      const r = Math.random();
-      const c = r < 0.4 ? teal : (r < 0.75 ? teal : cream);
+      // Color mix: 60% teal, 40% sage-glow
+      const c = Math.random() < 0.6 ? teal : sageGlow;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
 
-      sizes[i] = 1.5 + Math.random() * 2.5;
+      sizes[i] = 0.4 + Math.random() * 0.6;
       speeds[i] = 0.1 + Math.random() * 0.3;
       offsets[i] = Math.random() * Math.PI * 2;
     }
@@ -1416,19 +1414,19 @@ class SceneManager {
           pos.x += sin(uTime * 0.5 + aOffset) * 0.1;
           vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
           gl_Position = projectionMatrix * mvPos;
-          gl_PointSize = aSize * (300.0 / -mvPos.z);
+          gl_PointSize = aSize * (100.0 / -mvPos.z);
         }`,
       fragmentShader: `
         varying vec3 vColor;
         void main() {
           float d = length(gl_PointCoord - 0.5);
           if (d > 0.5) discard;
-          float alpha = smoothstep(0.5, 0.15, d) * 0.25;
+          float alpha = smoothstep(0.5, 0.1, d) * 0.06;
           gl_FragColor = vec4(vColor, alpha);
         }`,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       vertexColors: true
     });
 
@@ -1473,7 +1471,16 @@ class SceneManager {
           child.castShadow = true;
           child.receiveShadow = true;
           if (child.material) {
-            child.material.envMapIntensity = 0.4;
+            child.material.envMapIntensity = 0.08;
+            // Desaturate material colors toward neutral to counter warm cast
+            if (child.material.color) {
+              const c = child.material.color;
+              const gray = c.r * 0.299 + c.g * 0.587 + c.b * 0.114;
+              const desat = 0.35;
+              c.r = c.r + (gray - c.r) * desat;
+              c.g = c.g + (gray - c.g) * desat;
+              c.b = c.b + (gray - c.b) * desat;
+            }
           }
         }
       });
