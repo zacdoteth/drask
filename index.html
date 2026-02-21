@@ -176,37 +176,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* Duck Mode toggle */
-  .duck-mode-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 8;
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1.5px solid rgba(255,255,255,0.35);
-    border-radius: 50px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-weight: 700;
-    color: rgba(255,255,255,0.85);
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    pointer-events: auto;
-  }
-  .duck-mode-btn:hover { background: rgba(255,255,255,0.4); color: #fff; }
-  .duck-mode-btn.active {
-    background: rgba(232,168,50,0.3);
-    border-color: rgba(232,168,50,0.5);
-    color: #fff;
-  }
-  .duck-mode-btn .duck-icon { font-size: 16px; }
-
   /* Scene Overlay — Ask Jeeves style: doc left, input right */
   .scene-overlay {
     position: absolute;
@@ -1357,7 +1326,6 @@
     </div>
     <div class="tagline">I See You &mdash; AI Health Navigator</div>
   </div>
-  <button class="duck-mode-btn" id="duck-mode-btn"><span class="duck-icon">&#129414;</span> Duck Mode</button>
   <div class="scene-overlay">
     <div class="char-bubble" id="char-bubble">I see you! &#127807;</div>
     <div class="monitor-frame">
@@ -2525,64 +2493,6 @@ class SceneManager {
     this._targetTierColors = this._tierColors[tier] || this._tierColors.quick;
   }
 
-  toggleDuckMode() {
-    if (!this._model || !this._duck) return;
-    this._duckMode = !this._duckMode;
-
-    // Save original positions on first toggle
-    if (!this._duckOriginalPos) {
-      this._duckOriginalPos = this._duck.position.clone();
-      this._duckOriginalScale = this._duck.scale.clone();
-      this._duckOriginalRot = this._duck.rotation.clone();
-      this._docOriginalPos = this._modelBasePos.clone();
-      this._docOriginalScale = this._modelBaseScale.clone();
-      this._docOriginalRot = this._modelBaseRot.clone();
-    }
-
-    if (this._duckMode) {
-      // Duck becomes the star — moves to Dr. ICU's spot, scales up
-      const duckTargetScale = this._docOriginalScale.x * 1.2;
-      this._animateSwap(this._duck, this._docOriginalPos, duckTargetScale, 0);
-      // Dr. ICU shrinks onto the desk
-      const deskScale = this._duckOriginalScale.x;
-      this._animateSwap(this._model, this._duckOriginalPos, deskScale, this._duckOriginalRot.y);
-      // Update base values so idle animation works on duck's new position
-      this._modelBasePos.copy(this._duckOriginalPos);
-      this._modelBaseScale.setScalar(deskScale);
-      this._characterHeight = 0.4;
-    } else {
-      // Swap back
-      this._animateSwap(this._duck, this._duckOriginalPos, this._duckOriginalScale.x, this._duckOriginalRot.y);
-      this._animateSwap(this._model, this._docOriginalPos, this._docOriginalScale.x, this._docOriginalRot.y);
-      this._modelBasePos.copy(this._docOriginalPos);
-      this._modelBaseScale.copy(this._docOriginalScale);
-      this._characterHeight = 1.8;
-    }
-  }
-
-  _animateSwap(obj, targetPos, targetScaleVal, targetRotY) {
-    const startPos = obj.position.clone();
-    const startScale = obj.scale.x;
-    const startRotY = obj.rotation.y;
-    const startTime = this._clock.elapsedTime;
-    const duration = 0.7;
-
-    const tick = () => {
-      const t = Math.min((this._clock.elapsedTime - startTime) / duration, 1);
-      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      obj.position.lerpVectors(startPos, targetPos, ease);
-      const s = startScale + (targetScaleVal - startScale) * ease;
-      obj.scale.setScalar(s);
-      obj.rotation.y = startRotY + (targetRotY - startRotY) * ease;
-      // Bounce at the end
-      if (t > 0.7 && t < 1) {
-        const bounce = Math.sin((t - 0.7) / 0.3 * Math.PI) * 0.05;
-        obj.position.y += bounce;
-      }
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    tick();
-  }
 
   triggerClick() {
     this._clicked = true;
@@ -2859,12 +2769,6 @@ class SceneManager {
 const mgr = new SceneManager('scene-canvas');
 window._sceneManager = mgr;
 
-// Duck Mode toggle
-document.getElementById('duck-mode-btn').addEventListener('click', () => {
-  if (!window._sceneManager) return;
-  window._sceneManager.toggleDuckMode();
-  document.getElementById('duck-mode-btn').classList.toggle('active');
-});
 
 </script>
 
