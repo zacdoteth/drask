@@ -2499,7 +2499,12 @@ class SceneManager {
     const x = (projected.x * 0.5 + 0.5) * rect.width;
     const y = (-projected.y * 0.5 + 0.5) * rect.height;
 
-    bubble.style.left = x + 'px';
+    // Clamp so bubble doesn't clip off left/right edges
+    const bubbleW = bubble.offsetWidth || 200;
+    const minX = bubbleW / 2 + 10;
+    const maxX = rect.width - bubbleW / 2 - 10;
+    const clampedX = Math.max(minX, Math.min(maxX, x));
+    bubble.style.left = clampedX + 'px';
     bubble.style.top = (y - 20) + 'px';
   }
 
