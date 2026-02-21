@@ -90,6 +90,18 @@
     pointer-events: none;
   }
   .loading-content { text-align: center; }
+  .loading-duck {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: duck-waddle 1.2s ease-in-out infinite;
+  }
+  @keyframes duck-waddle {
+    0%, 100% { transform: rotate(-8deg) translateY(0); }
+    25% { transform: rotate(8deg) translateY(-6px); }
+    50% { transform: rotate(-6deg) translateY(0); }
+    75% { transform: rotate(6deg) translateY(-4px); }
+  }
   .loading-logo {
     font-family: 'Bricolage Grotesque', sans-serif;
     font-size: 64px;
@@ -1307,6 +1319,7 @@
   <canvas id="scene-canvas"></canvas>
   <div class="scene-loading" id="scene-loading">
     <div class="loading-content">
+      <div class="loading-duck">&#129414;</div>
       <div class="loading-logo">
         <span class="loading-dr">Dr.</span><span class="loading-icu">ICU</span>
       </div>
