@@ -508,6 +508,21 @@
     background: rgba(255,255,255,0.6);
     box-shadow: 0 0 0 3px rgba(61,155,143,0.1);
   }
+  .search-input.glow-invite {
+    animation: inputGlow 1.8s cubic-bezier(0.4, 0, 0.2, 1) 3;
+  }
+  @keyframes inputGlow {
+    0%, 100% {
+      border-color: rgba(255,255,255,0.5);
+      box-shadow: none;
+      background: rgba(255,255,255,0.45);
+    }
+    50% {
+      border-color: var(--sage-glow);
+      box-shadow: 0 0 0 4px rgba(94,207,191,0.18), 0 0 24px rgba(94,207,191,0.12), 0 0 48px rgba(94,207,191,0.06);
+      background: rgba(255,255,255,0.7);
+    }
+  }
   /* Tier-colored search border */
   .search-row.tier-deep .search-input { border-color: rgba(124,92,252,0.4); }
   .search-row.tier-deep .search-input:focus { box-shadow: 0 0 0 3px rgba(124,92,252,0.12); }
@@ -2875,9 +2890,17 @@ function runIntroSequence() {
     { delay: 9000, msg: 'Ask me anything!',                 duration: 3500 },
   ];
 
-  sequence.forEach(({ delay, msg, duration, instant }) => {
+  sequence.forEach(({ delay, msg, duration, instant }, i) => {
     const t = setTimeout(() => {
       if (charState === 'idle' && !bubbleBusy) showBubble(msg, duration, { instant: !!instant });
+      // On the last message ("Ask me anything!"), glow the search input
+      if (i === sequence.length - 1) {
+        const input = document.getElementById('search-input');
+        input.classList.remove('glow-invite');
+        void input.offsetWidth; // reflow to restart animation
+        input.classList.add('glow-invite');
+        input.addEventListener('animationend', () => input.classList.remove('glow-invite'), { once: true });
+      }
     }, delay);
     introTimers.push(t);
   });
