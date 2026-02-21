@@ -282,7 +282,7 @@
     font-weight: 700;
     color: var(--sage-deep);
     white-space: normal;
-    max-width: min(75vw, 340px);
+    max-width: min(85vw, 380px);
     text-align: center;
     line-height: 1.4;
     box-shadow: 0 6px 24px rgba(61,155,143,0.14);
@@ -2883,10 +2883,9 @@ function cancelIntroTimers() {
 
 function runIntroSequence() {
   const sequence = [
-    { delay: 800,  msg: '...',                              duration: 1000, instant: true },
-    { delay: 2200, msg: "Hi! I'm Dr. ICU.",                 duration: 2400 },
-    { delay: 5400, msg: 'Your AI health navigator.',        duration: 2800 },
-    { delay: 9000, msg: 'Ask me anything!',                 duration: 3500 },
+    { delay: 800,  msg: '...',                                          duration: 1000, instant: true },
+    { delay: 2200, msg: "Hi! I'm Dr. ICU, your AI health navigator.",   duration: 3400 },
+    { delay: 6400, msg: 'Ask me anything!',                             duration: 3500 },
   ];
 
   sequence.forEach(({ delay, msg, duration, instant }, i) => {
