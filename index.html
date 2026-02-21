@@ -55,7 +55,7 @@
     width: 100%;
     height: clamp(500px, 75vh, 900px);
     overflow: hidden;
-    background: #B8DDD3;
+    background: #e4ebe4;
   }
   #scene-canvas {
     display: block;
@@ -81,7 +81,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #B8DDD3;
+    background: #e4ebe4;
     z-index: 20;
     transition: opacity 0.8s ease-out;
   }
@@ -1488,8 +1488,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+// ShaderPass/FXAA removed — using OutputPass instead
+// lil-gui removed — values hardcoded from tuning session
 
 // ═══ LOADING DUCK — mini 3D renderer for splash screen ═══
 (function initLoadingDuck() {
@@ -1510,10 +1511,10 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   renderer.setViewport(0, 0, w * dpr, h * dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.LinearToneMapping;
-  renderer.toneMappingExposure = 0.85;
+  renderer.toneMappingExposure = 1.2;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#B8DDD3');
+  scene.background = new THREE.Color('#e4ebe4');
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
   camera.position.set(0, 0.4, 2.5);
   camera.lookAt(0, 0.1, 0);
@@ -1606,11 +1607,11 @@ class SceneManager {
     this._isLowEnd = navigator.hardwareConcurrency <= 4;
     this._quality = (this._isMobile || this._isLowEnd) ? 'low' : 'high';
 
-    // Tier colors
+    // Tier colors (tuned for Linear tone mapping at exposure 1.2)
     this._tierColors = {
-      quick: { rim: new THREE.Color('#5ECFBF'), accent: new THREE.Color('#3D9B8F'), bloom: 0.06, exposure: 0.62 },
-      deep: { rim: new THREE.Color('#9B85FF'), accent: new THREE.Color('#7C5CFC'), bloom: 0.12, exposure: 0.6 },
-      bios: { rim: new THREE.Color('#F0C850'), accent: new THREE.Color('#E8A832'), bloom: 0.1, exposure: 0.65 }
+      quick: { rim: new THREE.Color('#5ECFBF'), accent: new THREE.Color('#3D9B8F'), bloom: 0.1, exposure: 1.2 },
+      deep: { rim: new THREE.Color('#9B85FF'), accent: new THREE.Color('#7C5CFC'), bloom: 0.15, exposure: 1.15 },
+      bios: { rim: new THREE.Color('#F0C850'), accent: new THREE.Color('#E8A832'), bloom: 0.12, exposure: 1.25 }
     };
     this._targetTierColors = this._tierColors.quick;
 
@@ -1618,7 +1619,10 @@ class SceneManager {
     this._initCamera();
     this._initScene();
     this._initLights();
-    // Post-processing disabled — bloom/vignette was over-saturating skin tones
+    if (this._quality === 'high') {
+      try { this._initPostProcessing(); }
+      catch(e) { console.warn('Post-processing init failed:', e); }
+    }
     try { this._buildEnvironment(); }
     catch(e) { console.warn('Environment build error:', e); }
     try { this._buildParticles(); }
@@ -1639,7 +1643,7 @@ class SceneManager {
     });
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, this._quality === 'high' ? 2 : 1.5));
     this._renderer.toneMapping = THREE.LinearToneMapping;
-    this._renderer.toneMappingExposure = 0.68;
+    this._renderer.toneMappingExposure = 1.2;
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (this._quality === 'high') {
       this._renderer.shadowMap.enabled = true;
@@ -1666,50 +1670,47 @@ class SceneManager {
   // ─── SCENE ───
   _initScene() {
     this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color('#B8DDD3');
-    this._scene.fog = new THREE.Fog(0xB8DDD3, 10, 40);
+    this._scene.background = new THREE.Color('#e4ebe4');
+    // Fog removed — add back only after base lighting is correct
   }
 
-  // ─── LIGHTS ───
+  // ─── LIGHTS (warm key, cool fill, strong rim — 3.3:1 ratio) ───
   _initLights() {
-    // Hemisphere ambient
-    const hemi = new THREE.HemisphereLight(0xE8F5F2, 0xE0E4E2, 0.3);
-    this._scene.add(hemi);
+    // HEMISPHERE — warm ground bounce, cool sky
+    this._hemiLight = new THREE.HemisphereLight('#dde6dd', '#fff0dd', 0.8);
+    this._scene.add(this._hemiLight);
 
-    // Key light (main shadow caster) — neutral white, pulled back to avoid over-saturation
-    this._keyLight = new THREE.DirectionalLight(0xFFF8F0, 0.7);
-    this._keyLight.position.set(5, 8, 6);
+    // KEY — slightly warm white
+    this._keyLight = new THREE.DirectionalLight('#fff8f0', 1.5);
+    this._keyLight.position.set(4, 6, 3);
     if (this._quality === 'high') {
       this._keyLight.castShadow = true;
-      this._keyLight.shadow.mapSize.set(1024, 1024);
-      this._keyLight.shadow.camera.left = -4;
-      this._keyLight.shadow.camera.right = 4;
-      this._keyLight.shadow.camera.top = 4;
-      this._keyLight.shadow.camera.bottom = -1;
-      this._keyLight.shadow.bias = -0.001;
-      this._keyLight.shadow.radius = 3;
+      this._keyLight.shadow.mapSize.set(2048, 2048);
+      this._keyLight.shadow.camera.near = 0.1;
+      this._keyLight.shadow.camera.far = 20;
+      this._keyLight.shadow.camera.left = -5;
+      this._keyLight.shadow.camera.right = 5;
+      this._keyLight.shadow.camera.top = 5;
+      this._keyLight.shadow.camera.bottom = -2;
+      this._keyLight.shadow.bias = -0.0005;
+      this._keyLight.shadow.normalBias = 0.02;
     }
     this._scene.add(this._keyLight);
 
-    // Fill light — cool tint to counterbalance warm key
-    const fill = new THREE.DirectionalLight(0xD8F0F0, 0.35);
-    fill.position.set(-4, 3, 4);
-    this._scene.add(fill);
+    // FILL — cool blue-ish, subtle
+    this._fillLight = new THREE.DirectionalLight('#e0e8f0', 0.1);
+    this._fillLight.position.set(-3, 2, 2);
+    this._scene.add(this._fillLight);
 
-    // Rim light (tier reactive)
-    this._rimLight = new THREE.DirectionalLight(0x5ECFBF, 0.6);
-    this._rimLight.position.set(-3, 4, -4);
+    // RIM — teal edge on head/shoulders
+    this._rimLight = new THREE.DirectionalLight('#5ECFBF', 1.3);
+    this._rimLight.position.set(-2, 4, -3);
     this._scene.add(this._rimLight);
 
-    // Accent point light (monitor glow, tier reactive)
-    this._accentLight = new THREE.PointLight(0x3D9B8F, 0.2, 4);
-    this._accentLight.position.set(0.0, 1.2, -0.1);
+    // MONITOR ACCENT — teal point light at monitor screen
+    this._accentLight = new THREE.PointLight('#3D9B8F', 2, 5, 2);
+    this._accentLight.position.set(0.0, 1.3, 0.2);
     this._scene.add(this._accentLight);
-
-    // Under-desk ambient glow
-    const underglow = new THREE.PointLight(0x5ECFBF, 0.05, 3);
-    underglow.position.set(0.0, 0.3, 0);
-    this._scene.add(underglow);
   }
 
   // ─── POST-PROCESSING ───
@@ -1719,32 +1720,13 @@ class SceneManager {
     const renderPass = new RenderPass(this._scene, this._camera);
     this._composer.addPass(renderPass);
 
-    // Bloom
+    // Bloom — EXTREMELY conservative. Only monitor screen should glow.
     const size = this._renderer.getSize(new THREE.Vector2());
-    this._bloomPass = new UnrealBloomPass(size, 0.06, 0.4, 0.92);
+    this._bloomPass = new UnrealBloomPass(size, 0.1, 0.4, 0.84);
     this._composer.addPass(this._bloomPass);
 
-    // Vignette
-    const vignetteShader = {
-      uniforms: { tDiffuse: { value: null } },
-      vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-      fragmentShader: `uniform sampler2D tDiffuse; varying vec2 vUv;
-        void main() {
-          vec4 color = texture2D(tDiffuse, vUv);
-          float d = distance(vUv, vec2(0.5));
-          float vignette = smoothstep(0.7, 0.3, d);
-          color.rgb *= mix(0.85, 1.0, vignette);
-          gl_FragColor = color;
-        }`
-    };
-    const vignettePass = new ShaderPass(vignetteShader);
-    this._composer.addPass(vignettePass);
-
-    // FXAA
-    const fxaaPass = new ShaderPass(FXAAShader);
-    fxaaPass.material.uniforms['resolution'].value.set(1 / size.x, 1 / size.y);
-    this._fxaaPass = fxaaPass;
-    this._composer.addPass(fxaaPass);
+    // OutputPass — REQUIRED for correct sRGB color space conversion with EffectComposer
+    this._composer.addPass(new OutputPass());
   }
 
   _disablePostProcessing() {
@@ -1753,13 +1735,14 @@ class SceneManager {
 
   // ─── ENVIRONMENT ───
   _buildEnvironment() {
-    // Sky dome
+    // Sky dome — richer gradient with warm horizon
     const skyGeo = new THREE.SphereGeometry(80, 32, 16);
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       uniforms: {
-        uTopColor: { value: new THREE.Color('#9ED4C8') },
-        uBottomColor: { value: new THREE.Color('#E8E2D6') }
+        uTopColor: { value: new THREE.Color('#d8e4dc') },
+        uMidColor: { value: new THREE.Color('#e4ebe4') },
+        uBottomColor: { value: new THREE.Color('#f0ece2') }
       },
       vertexShader: `varying vec3 vWorldPos;
         void main() {
@@ -1767,32 +1750,39 @@ class SceneManager {
           vWorldPos = wp.xyz;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }`,
-      fragmentShader: `uniform vec3 uTopColor; uniform vec3 uBottomColor;
+      fragmentShader: `uniform vec3 uTopColor; uniform vec3 uMidColor; uniform vec3 uBottomColor;
         varying vec3 vWorldPos;
         void main() {
           float h = normalize(vWorldPos).y * 0.5 + 0.5;
-          gl_FragColor = vec4(mix(uBottomColor, uTopColor, h), 1.0);
+          vec3 col = h > 0.5
+            ? mix(uMidColor, uTopColor, (h - 0.5) * 2.0)
+            : mix(uBottomColor, uMidColor, h * 2.0);
+          gl_FragColor = vec4(col, 1.0);
         }`
     });
     this._scene.add(new THREE.Mesh(skyGeo, skyMat));
 
-    // Generate environment map from sky
+    // Environment map — warm cream scene for natural PBR reflections
     try {
       const pmrem = new THREE.PMREMGenerator(this._renderer);
-      pmrem.compileCubemapShader();
+      pmrem.compileEquirectangularShader();
       const envScene = new THREE.Scene();
-      envScene.add(new THREE.Mesh(skyGeo.clone(), skyMat.clone()));
-      const envMap = pmrem.fromScene(envScene, 0, 0.1, 100).texture;
-      this._scene.environment = envMap;
+      envScene.background = new THREE.Color('#ebe6dc');
+      const envHemi = new THREE.HemisphereLight('#dde4dd', '#fff0dd', 2);
+      envScene.add(envHemi);
+      const envRT = pmrem.fromScene(envScene, 0, 0.1, 100);
+      this._scene.environment = envRT.texture;
+      this._scene.environmentIntensity = 0.4;
       pmrem.dispose();
     } catch(e) { console.warn('Env map generation skipped:', e); }
 
-    // Floor
+    // Floor — slightly reflective for perceived depth
     const floorGeo = new THREE.PlaneGeometry(40, 40);
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0xD5CFC5,
-      roughness: 0.85,
-      metalness: 0
+      color: 0xD5D0C8,
+      roughness: 0.75,
+      metalness: 0.03,
+      envMapIntensity: 0.2
     });
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
@@ -1813,8 +1803,8 @@ class SceneManager {
           float gx = abs(fract(p.x) - 0.5) / fwidth(p.x);
           float gy = abs(fract(p.y) - 0.5) / fwidth(p.y);
           float g = 1.0 - min(min(gx, gy), 1.0);
-          float fade = 1.0 - smoothstep(0.0, 15.0, length(p));
-          gl_FragColor = vec4(0.75, 0.72, 0.68, g * 0.3 * fade);
+          float fade = 1.0 - smoothstep(0.0, 12.0, length(p));
+          gl_FragColor = vec4(0.78, 0.75, 0.70, g * 0.15 * fade);
         }`
     });
     this._gridMat = gridMat;
@@ -1823,13 +1813,19 @@ class SceneManager {
     gridMesh.position.y = 0.002;
     this._scene.add(gridMesh);
 
-    // Contact shadow under character
-    const cShadowGeo = new THREE.PlaneGeometry(1.8, 1.8);
-    const cShadowMat = new THREE.MeshBasicMaterial({
-      color: 0x000000,
+    // Contact shadow under character — soft gradient blob
+    const cShadowGeo = new THREE.PlaneGeometry(2.0, 2.0);
+    const cShadowMat = new THREE.ShaderMaterial({
       transparent: true,
-      opacity: 0.12,
-      depthWrite: false
+      depthWrite: false,
+      uniforms: {},
+      vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+      fragmentShader: `varying vec2 vUv;
+        void main() {
+          float d = length(vUv - 0.5) * 2.0;
+          float alpha = smoothstep(1.0, 0.2, d) * 0.18;
+          gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
+        }`
     });
     this._contactShadow = new THREE.Mesh(cShadowGeo, cShadowMat);
     this._contactShadow.rotation.x = -Math.PI / 2;
@@ -1840,9 +1836,9 @@ class SceneManager {
     const desk = new THREE.Group();
     desk.position.set(0.0, 0, -0.3);
 
-    // Desk surface (extended width, slightly thicker)
+    // Desk surface (extended width, slightly thicker) — warm birch wood
     const deskGeo = new THREE.BoxGeometry(3.0, 0.10, 1.2);
-    const deskMat = new THREE.MeshStandardMaterial({ color: 0xFFF8EC, roughness: 0.5, metalness: 0.02 });
+    const deskMat = new THREE.MeshStandardMaterial({ color: 0xF5E8D0, roughness: 0.55, metalness: 0.01, envMapIntensity: 0.15 });
     const deskTop = new THREE.Mesh(deskGeo, deskMat);
     deskTop.position.y = 0.85;
     deskTop.castShadow = true;
@@ -1880,7 +1876,7 @@ class SceneManager {
 
     // Heartbeat monitor on desk
     const monFrameGeo = new THREE.BoxGeometry(0.85, 0.55, 0.04);
-    const monFrameMat = new THREE.MeshStandardMaterial({ color: 0x2C2C3A, metalness: 0.3, roughness: 0.4 });
+    const monFrameMat = new THREE.MeshStandardMaterial({ color: 0x2C2C3A, metalness: 0.4, roughness: 0.3, envMapIntensity: 0.5 });
     const monFrame = new THREE.Mesh(monFrameGeo, monFrameMat);
     monFrame.position.set(0, 1.17, -0.3);
     monFrame.castShadow = true;
@@ -2036,9 +2032,9 @@ class SceneManager {
 
     this._scene.add(desk);
 
-    // ─── BACK WALL ───
+    // ─── BACK WALL ─── warm cream with subtle texture feel
     const wallGeo = new THREE.PlaneGeometry(6, 4);
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xEFEBE3, roughness: 0.9 });
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xF0EBE0, roughness: 0.92, metalness: 0, envMapIntensity: 0.05 });
     const wall = new THREE.Mesh(wallGeo, wallMat);
     wall.position.set(0, 2, -2);
     wall.receiveShadow = true;
@@ -2074,32 +2070,35 @@ class SceneManager {
     }
   }
 
-  // ─── PARTICLES ───
+  // ─── PARTICLES (dust motes catching light) ───
   _buildParticles() {
-    const count = this._quality === 'high' ? 80 : 40;
+    const count = this._quality === 'high' ? 120 : 50;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const speeds = new Float32Array(count);
     const offsets = new Float32Array(count);
 
-    const teal = new THREE.Color('#3D9B8F');
-    const sageGlow = new THREE.Color('#5ECFBF');
+    // Warm golden dust + cool teal particles
+    const warm = new THREE.Color('#FFE8C0');
+    const teal = new THREE.Color('#5ECFBF');
+    const white = new THREE.Color('#FFFFFF');
 
     for (let i = 0; i < count; i++) {
-      // Spread particles in a volume around the scene
-      positions[i * 3] = (Math.random() - 0.5) * 8;
-      positions[i * 3 + 1] = Math.random() * 4;
+      // Concentrate particles near the light source area + scene center
+      positions[i * 3] = (Math.random() - 0.3) * 8;
+      positions[i * 3 + 1] = Math.random() * 4.5;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 6;
 
-      // Color mix: 60% teal, 40% sage-glow
-      const c = Math.random() < 0.6 ? teal : sageGlow;
+      // 50% warm gold, 30% teal, 20% white (catching light)
+      const r = Math.random();
+      const c = r < 0.5 ? warm : (r < 0.8 ? teal : white);
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
 
-      sizes[i] = 0.4 + Math.random() * 0.6;
-      speeds[i] = 0.1 + Math.random() * 0.3;
+      sizes[i] = 0.5 + Math.random() * 0.8;
+      speeds[i] = 0.04 + Math.random() * 0.12;
       offsets[i] = Math.random() * Math.PI * 2;
     }
 
@@ -2117,27 +2116,32 @@ class SceneManager {
         attribute float aSpeed;
         attribute float aOffset;
         varying vec3 vColor;
+        varying float vAlpha;
         uniform float uTime;
         void main() {
           vColor = color;
           vec3 pos = position;
-          pos.y = mod(pos.y + uTime * aSpeed, 4.0);
-          pos.x += sin(uTime * 0.5 + aOffset) * 0.1;
+          pos.y = mod(pos.y + uTime * aSpeed, 4.5);
+          pos.x += sin(uTime * 0.3 + aOffset) * 0.15;
+          pos.z += cos(uTime * 0.2 + aOffset * 1.5) * 0.08;
+          // Fade based on height — brighter near light source
+          vAlpha = 0.06 + smoothstep(1.5, 3.5, pos.y) * 0.08;
           vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
           gl_Position = projectionMatrix * mvPos;
-          gl_PointSize = aSize * (100.0 / -mvPos.z);
+          gl_PointSize = aSize * (120.0 / -mvPos.z);
         }`,
       fragmentShader: `
         varying vec3 vColor;
+        varying float vAlpha;
         void main() {
           float d = length(gl_PointCoord - 0.5);
           if (d > 0.5) discard;
-          float alpha = smoothstep(0.5, 0.1, d) * 0.06;
+          float alpha = smoothstep(0.5, 0.05, d) * vAlpha;
           gl_FragColor = vec4(vColor, alpha);
         }`,
       transparent: true,
       depthWrite: false,
-      blending: THREE.NormalBlending,
+      blending: THREE.AdditiveBlending,
       vertexColors: true
     });
 
@@ -2176,27 +2180,12 @@ class SceneManager {
     loader.load('public/doc.glb', (gltf) => {
       this._model = gltf.scene;
 
-      // Enable shadows + reduce env map warmth on model meshes
+      // Enable shadows — let AgX tone mapping handle color accuracy
       this._model.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          if (child.material) {
-            child.material.envMapIntensity = 0.05;
-            // Desaturate material colors toward neutral to counter warm cast
-            if (child.material.color) {
-              const c = child.material.color;
-              const gray = c.r * 0.299 + c.g * 0.587 + c.b * 0.114;
-              // Extra desaturation on warm/red tones (skin, nose, cheeks)
-              const warmth = c.r - Math.max(c.g, c.b);
-              const desat = warmth > 0.05 ? 0.6 : 0.4;
-              c.r = c.r + (gray - c.r) * desat;
-              c.g = c.g + (gray - c.g) * desat;
-              c.b = c.b + (gray - c.b) * desat;
-              // Pull red channel down further on warm materials
-              if (warmth > 0.05) c.r *= 0.88;
-            }
-          }
+          // Don't modify GLB material colors — AgX handles warm tones gracefully
         }
       });
 
@@ -2456,9 +2445,6 @@ class SceneManager {
     }
     if (this._composer) {
       this._composer.setSize(w, h);
-      if (this._fxaaPass) {
-        this._fxaaPass.material.uniforms['resolution'].value.set(1 / w, 1 / h);
-      }
     }
   }
 
@@ -2527,12 +2513,19 @@ class SceneManager {
       if (this._clickTime > 0.6) this._clicked = false;
     }
 
-    // ── Camera parallax + scroll dolly ──
+    // ── Camera parallax + scroll dolly + breathing ──
+    // Subtle camera breathing — cinematic micro-motion
+    const breathX = Math.sin(elapsed * 0.15) * 0.008;
+    const breathY = Math.sin(elapsed * 0.12 + 1.0) * 0.005;
+
     if (!this._isMobile) {
-      const targetX = this._baseCameraPos.x + this._mouse.x * 0.8;
-      const targetY = this._baseCameraPos.y - this._mouse.y * 0.3;
+      const targetX = this._baseCameraPos.x + this._mouse.x * 0.8 + breathX;
+      const targetY = this._baseCameraPos.y - this._mouse.y * 0.3 + breathY;
       this._camera.position.x += (targetX - this._camera.position.x) * 0.03;
       this._camera.position.y += (targetY - this._camera.position.y) * 0.03;
+    } else {
+      // Mobile gets breathing too but no parallax
+      this._camera.position.x += (this._baseCameraPos.x + breathX - this._camera.position.x) * 0.02;
     }
 
     // Scroll dolly
@@ -2648,13 +2641,12 @@ class SceneManager {
       this._model.rotation.set(rot.x, rot.y, rot.z);
       this._model.scale.copy(scl);
 
-      // Contact shadow
+      // Contact shadow follows character
       if (this._contactShadow) {
         this._contactShadow.position.x = pos.x;
         this._contactShadow.position.z = pos.z;
         const shadowScale = this._charState === 'celebrating' ? 0.85 : 1;
         this._contactShadow.scale.set(shadowScale, shadowScale, 1);
-        this._contactShadow.material.opacity = this._charState === 'celebrating' ? 0.08 : 0.12;
       }
 
       // ── Bubble projection ──
