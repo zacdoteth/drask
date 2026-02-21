@@ -1602,7 +1602,7 @@ class SceneManager {
     const fov = this._isMobile ? 50 : 40;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 200);
     this._baseCameraPos = this._isMobile
-      ? new THREE.Vector3(-1.5, 1.5, 4.5)
+      ? new THREE.Vector3(-1.5, 1.5, 5.0)
       : new THREE.Vector3(-0.3, 1.4, 5.8);
     this._baseCameraTarget = this._isMobile
       ? new THREE.Vector3(-1.5, 0.95, 0.5)
