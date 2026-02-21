@@ -180,7 +180,7 @@
     top: 20px;
     left: 28px;
     z-index: 6;
-    pointer-events: none;
+    cursor: pointer;
   }
   .scene-brand .logo {
     display: flex;
@@ -908,6 +908,34 @@
     display: none;
   }
   .response-area.visible { display: block; }
+
+  /* ═══ NEW QUESTION BUTTON ═══ */
+  .new-question-btn {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 900;
+    background: linear-gradient(180deg, var(--sage) 0%, var(--sage-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(61,155,143,0.35);
+    transition: all 0.2s;
+    align-items: center;
+    gap: 8px;
+  }
+  .new-question-btn.visible { display: inline-flex; }
+  .new-question-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(61,155,143,0.45);
+  }
+  .new-question-btn .nq-icon { font-size: 16px; }
   .response-card {
     background: #fff;
     border: 1.5px solid var(--border);
@@ -1138,7 +1166,7 @@
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <a href="#">Home</a>
+  <a href="#" id="nav-home">Home</a>
   <a href="#">About</a>
   <a href="#">How It Works</a>
   <a href="#">API</a>
@@ -1284,6 +1312,11 @@
 <!-- RESPONSE AREA -->
 <div class="response-area" id="response-area"></div>
 
+<!-- NEW QUESTION BUTTON -->
+<button class="new-question-btn" id="new-question-btn">
+  <span class="nq-icon">&#x2b06;&#xfe0f;</span> New Question
+</button>
+
 <!-- BOTTOM SECTIONS -->
 <div class="bottom-sections" id="bottom-sections">
   <div class="sidebar">
@@ -1371,9 +1404,9 @@ class SceneManager {
 
     // Tier colors
     this._tierColors = {
-      quick: { rim: new THREE.Color('#5ECFBF'), accent: new THREE.Color('#3D9B8F'), bloom: 0.12, exposure: 0.75 },
-      deep: { rim: new THREE.Color('#9B85FF'), accent: new THREE.Color('#7C5CFC'), bloom: 0.2, exposure: 0.7 },
-      bios: { rim: new THREE.Color('#F0C850'), accent: new THREE.Color('#E8A832'), bloom: 0.18, exposure: 0.8 }
+      quick: { rim: new THREE.Color('#5ECFBF'), accent: new THREE.Color('#3D9B8F'), bloom: 0.06, exposure: 0.62 },
+      deep: { rim: new THREE.Color('#9B85FF'), accent: new THREE.Color('#7C5CFC'), bloom: 0.12, exposure: 0.6 },
+      bios: { rim: new THREE.Color('#F0C850'), accent: new THREE.Color('#E8A832'), bloom: 0.1, exposure: 0.65 }
     };
     this._targetTierColors = this._tierColors.quick;
 
@@ -1403,7 +1436,7 @@ class SceneManager {
     });
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, this._quality === 'high' ? 2 : 1.5));
     this._renderer.toneMapping = THREE.LinearToneMapping;
-    this._renderer.toneMappingExposure = 0.72;
+    this._renderer.toneMappingExposure = 0.62;
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (this._quality === 'high') {
       this._renderer.shadowMap.enabled = true;
@@ -1418,10 +1451,10 @@ class SceneManager {
     const fov = this._isMobile ? 50 : 40;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 200);
     this._baseCameraPos = this._isMobile
-      ? new THREE.Vector3(-0.8, 1.3, 4.5)
+      ? new THREE.Vector3(-0.5, 1.2, 4.5)
       : new THREE.Vector3(-0.3, 1.4, 5.8);
     this._baseCameraTarget = this._isMobile
-      ? new THREE.Vector3(-0.6, 0.85, 0)
+      ? new THREE.Vector3(-0.3, 1.0, 0)
       : new THREE.Vector3(-0.1, 0.9, 0);
     this._camera.position.copy(this._baseCameraPos);
     this._camera.lookAt(this._baseCameraTarget);
@@ -1440,8 +1473,8 @@ class SceneManager {
     const hemi = new THREE.HemisphereLight(0xE8F5F2, 0xE0E4E2, 0.3);
     this._scene.add(hemi);
 
-    // Key light (main shadow caster) — neutral white to avoid peachy cast
-    this._keyLight = new THREE.DirectionalLight(0xFFFFFF, 0.9);
+    // Key light (main shadow caster) — neutral white, pulled back to avoid over-saturation
+    this._keyLight = new THREE.DirectionalLight(0xFFF8F0, 0.7);
     this._keyLight.position.set(5, 8, 6);
     if (this._quality === 'high') {
       this._keyLight.castShadow = true;
@@ -1455,8 +1488,8 @@ class SceneManager {
     }
     this._scene.add(this._keyLight);
 
-    // Fill light — cool tint to balance
-    const fill = new THREE.DirectionalLight(0xE0F0F0, 0.25);
+    // Fill light — cool tint to counterbalance warm key
+    const fill = new THREE.DirectionalLight(0xD8F0F0, 0.35);
     fill.position.set(-4, 3, 4);
     this._scene.add(fill);
 
@@ -1485,7 +1518,7 @@ class SceneManager {
 
     // Bloom
     const size = this._renderer.getSize(new THREE.Vector2());
-    this._bloomPass = new UnrealBloomPass(size, 0.12, 0.4, 0.9);
+    this._bloomPass = new UnrealBloomPass(size, 0.06, 0.4, 0.92);
     this._composer.addPass(this._bloomPass);
 
     // Vignette
@@ -3071,6 +3104,41 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
     tab.classList.add('active');
   });
 });
+
+// ═══ NAVIGATION — HOME + NEW QUESTION ═══
+function resetToHome() {
+  responseArea.innerHTML = '';
+  responseArea.classList.remove('visible');
+  bottomSections.style.display = '';
+  conversationHistory = [];
+  searchInput.value = '';
+  searchInput.placeholder = 'How can I help you today?';
+  setTier('quick');
+  document.getElementById('new-question-btn').classList.remove('visible');
+  document.getElementById('scene-container').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('nav-home').addEventListener('click', (e) => {
+  e.preventDefault();
+  resetToHome();
+});
+
+document.querySelector('.scene-brand').addEventListener('click', () => {
+  resetToHome();
+});
+
+document.getElementById('new-question-btn').addEventListener('click', () => {
+  searchInput.value = '';
+  document.getElementById('scene-container').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => searchInput.focus(), 400);
+});
+
+// Show new-question button when responses exist
+const newQObserver = new MutationObserver(() => {
+  const hasResponses = responseArea.classList.contains('visible') && responseArea.children.length > 0;
+  document.getElementById('new-question-btn').classList.toggle('visible', hasResponses);
+});
+newQObserver.observe(responseArea, { childList: true, attributes: true });
 
 // Boot — intro sequence is triggered by model load in SceneManager
 </script>
