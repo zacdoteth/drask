@@ -1132,29 +1132,35 @@
     .monitor-screen { padding: 16px 16px 12px; }
     .search-input { padding: 12px 14px; font-size: 14px; }
     .ask-btn { padding: 12px 24px; font-size: 15px; }
-    .bottom-sections { flex-direction: column; padding: 0 16px 20px; gap: 16px; }
+    .bottom-sections { flex-direction: column; padding: 0 16px 20px; gap: 14px; }
     .sidebar { width: 100%; }
     .sidebar-title {
-      font-size: 16px;
+      font-size: 14px;
       text-align: center;
       border-bottom: none;
       margin-bottom: 8px;
       padding-bottom: 0;
     }
+    .sidebar-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
     .sidebar-link {
       background: white;
       border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 6px;
-      font-size: 14px;
+      border-radius: 20px;
+      padding: 8px 14px;
+      margin-bottom: 0;
+      font-size: 13px;
     }
     .sidebar-link:hover, .sidebar-link:active {
       background: var(--sage-pale);
       border-color: var(--sage);
     }
     .sidebar-link .dot {
-      width: 8px; height: 8px; opacity: 0.7;
+      width: 6px; height: 6px; opacity: 0.7;
     }
     .section-title {
       text-align: center;
@@ -1352,17 +1358,6 @@
 
 <!-- BOTTOM SECTIONS -->
 <div class="bottom-sections" id="bottom-sections">
-  <div class="sidebar">
-    <div class="sidebar-title">&#127807; May I Suggest:</div>
-    <div class="sidebar-link" data-q="What does my blood test results mean?"><span class="dot"></span> Blood Work Decoder</div>
-    <div class="sidebar-link" data-q="What questions should I ask before surgery?"><span class="dot"></span> Pre-Surgery Guide</div>
-    <div class="sidebar-link" data-q="Explain common medication interactions"><span class="dot"></span> Drug Interactions</div>
-    <div class="sidebar-link" data-q="What are signs of vitamin deficiency?"><span class="dot"></span> Vitamin Check</div>
-    <div class="sidebar-link" data-q="How to read a nutrition label properly"><span class="dot"></span> Nutrition Labels</div>
-    <div class="sidebar-link" data-q="What screenings should I get at my age?"><span class="dot"></span> Health Screenings</div>
-    <div class="sidebar-link" data-q="How does stress affect the body physically?"><span class="dot"></span> Stress &amp; Body</div>
-    <div class="sidebar-link" data-q="What are the signs of caregiver burnout?"><span class="dot"></span> Caregiver Health</div>
-  </div>
   <div class="main-content">
     <div class="section-title">What are people asking <span class="highlight">RIGHT NOW?</span></div>
     <div class="trending-q" data-q="Do I need a measles booster if I was vaccinated as a kid?"><span class="q">Do I need a measles booster if I was vaccinated as a kid?</span><span class="arrow">&#8594;</span></div>
@@ -1371,6 +1366,19 @@
     <div class="trending-q" data-q="Why is this flu season so bad, and how do I know if it's flu or RSV?"><span class="q">Why is this flu season so bad, and how do I know if it's flu or RSV?</span><span class="arrow">&#8594;</span></div>
     <div class="trending-q" data-q="What is fibermaxxing and is it actually good for your gut?"><span class="q">What is fibermaxxing and is it actually good for your gut?</span><span class="arrow">&#8594;</span></div>
     <div class="trending-q" data-q="Does Ozempic cause muscle loss, and how do I prevent it?"><span class="q">Does Ozempic cause muscle loss, and how do I prevent it?</span><span class="arrow">&#8594;</span></div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-title">&#127807; Topics</div>
+    <div class="sidebar-chips">
+      <div class="sidebar-link" data-q="What does my blood test results mean?"><span class="dot"></span> Blood Work</div>
+      <div class="sidebar-link" data-q="What questions should I ask before surgery?"><span class="dot"></span> Pre-Surgery</div>
+      <div class="sidebar-link" data-q="Explain common medication interactions"><span class="dot"></span> Drug Interactions</div>
+      <div class="sidebar-link" data-q="What are signs of vitamin deficiency?"><span class="dot"></span> Vitamins</div>
+      <div class="sidebar-link" data-q="How to read a nutrition label properly"><span class="dot"></span> Nutrition</div>
+      <div class="sidebar-link" data-q="What screenings should I get at my age?"><span class="dot"></span> Screenings</div>
+      <div class="sidebar-link" data-q="How does stress affect the body physically?"><span class="dot"></span> Stress &amp; Body</div>
+      <div class="sidebar-link" data-q="What are the signs of caregiver burnout?"><span class="dot"></span> Caregiver</div>
+    </div>
   </div>
 </div>
 
