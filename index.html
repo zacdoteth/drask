@@ -1005,18 +1005,37 @@
   .a-body {
     font-family: 'DM Sans', sans-serif;
     font-size: 15.5px;
-    line-height: 1.8;
+    line-height: 1.85;
     color: var(--text);
     letter-spacing: -0.01em;
     font-optical-sizing: auto;
   }
-  .a-body p { margin-bottom: 12px; }
+  .a-body p { margin-bottom: 14px; }
   .a-body p:last-child { margin-bottom: 0; }
   .a-body strong, .a-body b {
     font-family: 'Instrument Serif', serif;
     font-weight: 400;
+    font-style: italic;
     font-size: 17px;
     color: var(--sage-deep);
+  }
+  .a-body em {
+    font-style: italic;
+    color: var(--text-light);
+  }
+  .a-body .a-h {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--charcoal);
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--sage-pale);
+  }
+  .a-body .a-h:first-child { margin-top: 0; }
+  .a-body .a-arrow {
+    color: var(--sage);
+    font-weight: 700;
   }
   .disclaimer {
     font-size: 11px; color: var(--text-light); margin-top: 14px;
@@ -2629,7 +2648,9 @@ const TIERS = {
     dotClass: 'tier-quick',
     system: `You are Dr. ICU, a warm AI health navigator. Quick, clear answers — like a brilliant friend who understands medicine.
 
-Style: Concise (60-100 words). Use → arrows for key points. Friendly, zero jargon. End with one practical next step.
+Style: Concise (80-120 words). Use **bold** for key medical terms. Use → arrows for key points. Friendly, zero jargon. End with one practical next step. At the very end, add a "Sources" line citing 1-2 reputable sources (e.g. Mayo Clinic, NIH, WHO, CDC, PubMed) relevant to your answer.
+
+Format: Use markdown. **Bold** for emphasis. Write in flowing prose paragraphs, not bullet lists. The answer should read like a warm, knowledgeable friend explaining something — not a textbook.
 
 Rules: Never diagnose or prescribe. Remind users to consult their provider. Answer ANY health topic. For emergencies, say call 911.`
   },
@@ -2641,9 +2662,13 @@ Rules: Never diagnose or prescribe. Remind users to consult their provider. Answ
     dotClass: 'tier-deep',
     system: `You are Dr. ICU, operating in Deep Dive mode — your most thorough reasoning level. You are a warm but intellectually rigorous AI health navigator.
 
-Style: Comprehensive (150-300 words). Structure with clear sections using → arrows. Explain mechanisms, not just facts. Use analogies to make complex biology intuitive. Consider multiple angles — when evidence conflicts, explain why. Reference the quality of evidence (strong RCTs vs. preliminary studies vs. expert opinion).
+Style: Comprehensive (150-300 words). Use **bold** for key terms and section headers. Use → arrows sparingly for key points. Explain mechanisms, not just facts. Use analogies to make complex biology intuitive. Consider multiple angles — when evidence conflicts, explain why. Write in flowing, readable prose — like a well-written science article, not bullet points.
 
-Rules: Never diagnose or prescribe. Always remind users to consult their healthcare provider. Answer ANY health topic with full depth. For emergencies, say call 911 immediately. When discussing medications, mention both benefits AND common side effects. When discussing conditions, cover what it is → why it happens → what to watch for → questions to ask your doctor.`
+Sources: End every answer with a "**Sources:**" section citing 2-3 reputable references (e.g. Mayo Clinic, NIH, WHO, CDC, PubMed, Cochrane Reviews, NEJM). Be specific — name the source and what it covers.
+
+Format: Use markdown throughout. **Bold** for emphasis and terms. Use ## for section headers when structuring longer answers.
+
+Rules: Never diagnose or prescribe. Always remind users to consult their healthcare provider. Answer ANY health topic with full depth. For emergencies, say call 911 immediately. When discussing medications, mention both benefits AND common side effects.`
   },
   bios: {
     model: 'bios-deep-research',
@@ -2963,6 +2988,23 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+function formatMarkdown(text) {
+  return text
+    // Headers: # Title → styled heading
+    .replace(/^### (.+)$/gm, '<h4 class="a-h">$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3 class="a-h">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h3 class="a-h">$1</h3>')
+    // Bold: **text** → <strong>
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic: *text* → <em>
+    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+    // Arrows
+    .replace(/→/g, '<span class="a-arrow">→</span>')
+    // Paragraphs
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+
 function addResponseCard(type, content, tier) {
   responseArea.classList.add('visible');
   const card = document.createElement('div');
@@ -2982,11 +3024,7 @@ function addResponseCard(type, content, tier) {
       <div class="typing-dots tier-${tier || currentTier}"><span></span><span></span><span></span></div>`;
   } else if (type === 'answer') {
     card.className = 'response-card sage-a ' + t.cardClass;
-    let formatted = content
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>')
-      .replace(/→/g, '<span style="color:var(--sage);font-weight:700">→</span>');
-    formatted = '<p>' + formatted + '</p>';
+    let formatted = '<p>' + formatMarkdown(content) + '</p>';
 
     card.innerHTML = `
       <div class="a-header">
@@ -3124,11 +3162,7 @@ async function askSage(question) {
               const evt = JSON.parse(payload);
               if (evt.type === 'content_block_delta' && evt.delta && evt.delta.text) {
                 reply += evt.delta.text;
-                let formatted = reply
-                  .replace(/\n\n/g, '</p><p>')
-                  .replace(/\n/g, '<br>')
-                  .replace(/→/g, '<span style="color:var(--sage);font-weight:700">→</span>');
-                bodyEl.innerHTML = '<p>' + formatted + '</p>';
+                bodyEl.innerHTML = '<p>' + formatMarkdown(reply) + '</p>';
                 streamCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
               }
             } catch (e) {}
