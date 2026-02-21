@@ -180,9 +180,9 @@
     inset: 0;
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-end;
-    padding: 24px 40px 60px;
+    padding: 24px 40px 24px;
     pointer-events: none;
     z-index: 5;
   }
@@ -231,7 +231,10 @@
     font-size: 13px;
     font-weight: 700;
     color: var(--sage-deep);
-    white-space: nowrap;
+    white-space: normal;
+    max-width: 260px;
+    text-align: center;
+    line-height: 1.4;
     box-shadow: 0 6px 24px rgba(61,155,143,0.14);
     opacity: 0;
     transition: opacity 0.4s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -798,14 +801,6 @@
           </div>
           <div class="tier-model">sonnet</div>
         </div>
-        <div class="tier-btn" data-tier="deep">
-          <div class="tier-icon"><span class="speed-dot"></span><span class="speed-dot"></span><span class="speed-dot"></span></div>
-          <div class="tier-label">
-            <div class="tier-name">Deep Dive</div>
-            <div class="tier-sub">Complex reasoning</div>
-          </div>
-          <div class="tier-model">opus</div>
-        </div>
         <div class="tier-btn" data-tier="bios">
           <div class="tier-icon">&#128272;</div>
           <div class="tier-label">
@@ -818,15 +813,6 @@
       <div class="search-row" id="search-row">
         <input type="text" class="search-input" id="search-input" placeholder="e.g. What does elevated CRP mean?" autocomplete="off">
         <button class="ask-btn" id="ask-btn">Ask!</button>
-      </div>
-      <div class="cat-tabs">
-        <div class="cat-tab active">&#127973; General</div>
-        <div class="cat-tab">&#129516; Lab Results</div>
-        <div class="cat-tab">&#128138; Medications</div>
-        <div class="cat-tab">&#129504; Mental Health</div>
-        <div class="cat-tab">&#129367; Nutrition</div>
-        <div class="cat-tab">&#127939; Fitness</div>
-        <div class="cat-tab">&#128118; Pediatric</div>
       </div>
     </div>
   </div>
@@ -981,8 +967,8 @@ class SceneManager {
     const aspect = this._canvas.clientWidth / this._canvas.clientHeight;
     const fov = this._isMobile ? 50 : 40;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 200);
-    this._baseCameraPos = new THREE.Vector3(-0.5, 1.4, this._isMobile ? 5.5 : 6);
-    this._baseCameraTarget = new THREE.Vector3(-0.3, 0.9, 0);
+    this._baseCameraPos = new THREE.Vector3(-0.8, 1.4, this._isMobile ? 5.5 : 5.5);
+    this._baseCameraTarget = new THREE.Vector3(-0.5, 0.9, 0);
     this._camera.position.copy(this._baseCameraPos);
     this._camera.lookAt(this._baseCameraTarget);
   }
@@ -1501,9 +1487,12 @@ class SceneManager {
       const newMin = box.min;
 
       // Position so feet are on floor (y=0), at x=-0.3, z=0.5
-      this._model.position.x = -1.0 - newCenter.x + this._model.position.x;
+      this._model.position.x = -1.8 - newCenter.x + this._model.position.x;
       this._model.position.y = -newMin.y + this._model.position.y;
       this._model.position.z = 0.5 - newCenter.z + this._model.position.z;
+
+      // Rotate slightly toward the camera so he faces the viewer
+      this._model.rotation.y = 0.22;
 
       this._characterHeight = size.y * scale;
       this._modelBasePos.copy(this._model.position);
@@ -2030,8 +2019,37 @@ biosOverlay.addEventListener('click', (e) => {
 });
 
 // ═══ BUBBLE SYSTEM ═══
+const drFacts = [
+  "Your nose can remember 50,000 different scents! \ud83d\udc43",
+  "Your body makes about 3.8 million cells every second.",
+  "Stomach acid is strong enough to dissolve metal. Your stomach lining replaces itself every 3-4 days!",
+  "The human brain uses 20% of your total oxygen \u2014 despite being only 2% of your body weight.",
+  "Your bones are about 5x stronger than steel of the same density. \ud83e\uddb4",
+  "You produce about 1 liter of saliva per day. That\u2019s 2 swimming pools in a lifetime!",
+  "Nerve impulses travel at up to 268 mph. Faster than a race car! \u26a1",
+  "Your heart beats about 100,000 times a day \u2014 that\u2019s 35 million times a year.",
+  "The cornea is the only part of the body with no blood supply \u2014 it gets oxygen directly from the air.",
+  "Your small intestine is about 20 feet long. Most digestion happens here, not the stomach!",
+  "Laughing increases blood flow by 20%. Laughter really is good medicine! \ud83d\ude04",
+  "You have about 60,000 miles of blood vessels. That could wrap around the Earth 2.5 times!",
+  "Your liver performs over 500 different functions. It\u2019s the ultimate multitasker.",
+  "Humans share 60% of their DNA with bananas. \ud83c\udf4c",
+  "Your body contains about 0.2mg of gold, mostly in your blood.",
+  "Babies are born with 270 bones. Adults have 206 \u2014 some fuse together as you grow!",
+  "The average person walks about 100,000 miles in a lifetime. That\u2019s 4 trips around the Earth! \ud83c\udf0d",
+  "Your eyes can distinguish about 10 million different colors.",
+  "Sneezes can travel up to 100 mph. Always cover up! \ud83e\udd27",
+  "The human body contains enough iron to make a 3-inch nail.",
+  "Your skin is your largest organ \u2014 about 20 square feet in adults.",
+  "Humans are the only animals that blush. It\u2019s actually a sign of empathy!",
+  "Your brain generates enough electricity to power a small lightbulb. \ud83d\udca1",
+  "The acid in your stomach is renewed every 3-4 days to prevent it from digesting itself.",
+  "Red blood cells can travel through your entire body in about 20 seconds.",
+];
+let factIndex = Math.floor(Math.random() * drFacts.length);
+
 const bubbleMessages = {
-  idle: ["Ask me anything! \ud83c\udf3f", "I'm all ears!", "What's on your mind?", "No question is too small!", "Curious about something?", "Let's figure it out!"],
+  idle: drFacts,
   thinking: {
     quick: ["Quick look...", "One sec!", "On it!", "Let me check..."],
     deep: ["Thinking deeply...", "Analyzing this...", "Let me reason through it...", "Going deep..."]
@@ -2040,20 +2058,28 @@ const bubbleMessages = {
 };
 
 let bubbleTimeout;
-function showBubble(msg) {
+function showBubble(msg, duration) {
   const b = document.getElementById('char-bubble');
   b.textContent = msg;
   b.classList.add('show');
   clearTimeout(bubbleTimeout);
-  bubbleTimeout = setTimeout(() => b.classList.remove('show'), 3000);
+  bubbleTimeout = setTimeout(() => b.classList.remove('show'), duration || 3000);
 }
+
+// Show a fact on load after a short delay, then cycle
+setTimeout(() => {
+  if (charState === 'idle') {
+    showBubble(drFacts[factIndex], 6000);
+    factIndex = (factIndex + 1) % drFacts.length;
+  }
+}, 3000);
 
 setInterval(() => {
   if (charState === 'idle') {
-    const msgs = bubbleMessages.idle;
-    showBubble(msgs[Math.floor(Math.random() * msgs.length)]);
+    showBubble(drFacts[factIndex], 6000);
+    factIndex = (factIndex + 1) % drFacts.length;
   }
-}, 12000);
+}, 15000);
 
 // ═══ CHARACTER STATES ═══
 let charState = 'idle';
