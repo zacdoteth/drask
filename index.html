@@ -3009,9 +3009,8 @@ function cancelIntroTimers() {
 
 function runIntroSequence() {
   const sequence = [
-    { delay: 800,  msg: '...',                                          duration: 1000, instant: true },
-    { delay: 2200, msg: "Hi! I'm Dr. ICU, your AI health navigator.",   duration: 3400 },
-    { delay: 6400, msg: 'Ask me anything!',                             duration: 3500 },
+    { delay: 800,  msg: "Hi! I'm Dr. ICU, your AI health navigator.",   duration: 3400 },
+    { delay: 5000, msg: 'Ask me anything!',                             duration: 3500 },
   ];
 
   sequence.forEach(({ delay, msg, duration, instant }, i) => {
