@@ -55,7 +55,7 @@
     width: 100%;
     height: clamp(500px, 75vh, 900px);
     overflow: hidden;
-    background: #e4ebe4;
+    background: #7A9990;
   }
   #scene-canvas {
     display: block;
@@ -81,7 +81,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #e4ebe4;
+    background: #f4f7f5;
     z-index: 20;
     transition: opacity 0.8s ease-out;
   }
@@ -91,9 +91,9 @@
   }
   .loading-content { text-align: center; }
   .loading-duck-canvas {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto 20px;
+    width: 240px;
+    height: 240px;
+    margin: 0 auto 16px;
     display: block;
   }
   .loading-logo {
@@ -104,7 +104,7 @@
     margin-bottom: 24px;
     animation: loading-pulse 2s ease-in-out infinite;
   }
-  .loading-dr { color: var(--sage-deep); }
+  .loading-dr { color: var(--charcoal); }
   .loading-icu {
     background: linear-gradient(135deg, var(--sage) 0%, var(--sage-glow) 100%);
     -webkit-background-clip: text;
@@ -118,7 +118,7 @@
   .loading-bar-track {
     width: 200px;
     height: 4px;
-    background: var(--border);
+    background: #e0e6e3;
     border-radius: 2px;
     margin: 0 auto 12px;
     overflow: hidden;
@@ -133,7 +133,7 @@
   .loading-status {
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
-    color: var(--text-light);
+    color: #6B8580;
     font-weight: 600;
   }
 
@@ -153,7 +153,7 @@
   }
   .scene-brand .logo .ask {
     font-size: 22px;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.6);
   }
   .scene-brand .logo .dr {
     font-size: 44px;
@@ -162,7 +162,7 @@
   }
   .scene-brand .logo .icu-name {
     font-size: 44px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
   }
   .scene-brand .logo .tm {
     font-size: 10px;
@@ -172,7 +172,7 @@
     font-family: 'Nunito', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.6);
     letter-spacing: 0.3px;
   }
 
@@ -1502,7 +1502,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   } catch(e) { console.warn('Loading duck: WebGL init failed', e); return; }
   const dpr = Math.min(window.devicePixelRatio, 2);
-  const w = 200, h = 200;
+  const w = 240, h = 240;
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   canvas.style.width = w + 'px';
@@ -1514,16 +1514,16 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
   renderer.toneMappingExposure = 1.2;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#e4ebe4');
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-  camera.position.set(0, 0.4, 2.5);
-  camera.lookAt(0, 0.1, 0);
+  // Transparent background — loading screen bg shows through
+  const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
+  camera.position.set(0, 0.2, 2.8);
+  camera.lookAt(0, 0, 0);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-  const key = new THREE.DirectionalLight(0xFFF8F0, 1.0);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const key = new THREE.DirectionalLight(0xFFF8F0, 1.2);
   key.position.set(2, 3, 3);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xD8F0F0, 0.4);
+  const fill = new THREE.DirectionalLight(0xD8F0F0, 0.5);
   fill.position.set(-2, 1, 2);
   scene.add(fill);
 
@@ -1670,7 +1670,7 @@ class SceneManager {
   // ─── SCENE ───
   _initScene() {
     this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color('#e4ebe4');
+    this._scene.background = new THREE.Color('#7A9990');
     // Fog removed — add back only after base lighting is correct
   }
 
@@ -1740,9 +1740,9 @@ class SceneManager {
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       uniforms: {
-        uTopColor: { value: new THREE.Color('#d8e4dc') },
-        uMidColor: { value: new THREE.Color('#e4ebe4') },
-        uBottomColor: { value: new THREE.Color('#f0ece2') }
+        uTopColor: { value: new THREE.Color('#6E8B83') },
+        uMidColor: { value: new THREE.Color('#7A9990') },
+        uBottomColor: { value: new THREE.Color('#8AA89E') }
       },
       vertexShader: `varying vec3 vWorldPos;
         void main() {
@@ -1989,31 +1989,131 @@ class SceneManager {
       console.warn('Duck GLB load failed:', err);
     });
 
-    // Coffee mug
-    const mugGeo = new THREE.CylinderGeometry(0.05, 0.045, 0.09, 12);
-    const mugMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF5, roughness: 0.4 });
+    // ─── COFFEE MUG with teal band + steam ───
+    const mugGeo = new THREE.CylinderGeometry(0.05, 0.042, 0.1, 16);
+    const mugMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF5, roughness: 0.35, metalness: 0.02 });
     const mug = new THREE.Mesh(mugGeo, mugMat);
-    mug.position.set(-0.85, 0.935, 0.25);
+    mug.position.set(-0.85, 0.94, 0.25);
+    mug.castShadow = true;
     desk.add(mug);
+    // Teal band on mug
+    const bandGeo = new THREE.CylinderGeometry(0.052, 0.052, 0.025, 16);
+    const bandMat = new THREE.MeshStandardMaterial({ color: 0x3D9B8F, roughness: 0.4 });
+    const band = new THREE.Mesh(bandGeo, bandMat);
+    band.position.set(-0.85, 0.95, 0.25);
+    desk.add(band);
     // Mug handle
-    const handleGeo = new THREE.TorusGeometry(0.025, 0.008, 8, 12, Math.PI);
+    const handleGeo = new THREE.TorusGeometry(0.028, 0.008, 8, 12, Math.PI);
     const handle = new THREE.Mesh(handleGeo, mugMat);
-    handle.position.set(-0.9, 0.935, 0.25);
+    handle.position.set(-0.902, 0.94, 0.25);
     handle.rotation.y = Math.PI / 2;
     desk.add(handle);
+    // Coffee inside (dark circle)
+    const coffeeGeo = new THREE.CircleGeometry(0.042, 16);
+    const coffeeMat = new THREE.MeshStandardMaterial({ color: 0x3A2518, roughness: 0.3 });
+    const coffee = new THREE.Mesh(coffeeGeo, coffeeMat);
+    coffee.position.set(-0.85, 0.99, 0.25);
+    coffee.rotation.x = -Math.PI / 2;
+    desk.add(coffee);
+    // Steam particles (stored for animation)
+    this._steamParticles = [];
+    for (let i = 0; i < 5; i++) {
+      const steamGeo = new THREE.SphereGeometry(0.008, 6, 6);
+      const steamMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, depthWrite: false });
+      const steam = new THREE.Mesh(steamGeo, steamMat);
+      steam.position.set(-0.85 + (Math.random() - 0.5) * 0.03, 1.0 + Math.random() * 0.15, 0.25 + (Math.random() - 0.5) * 0.03);
+      steam.userData.speed = 0.03 + Math.random() * 0.02;
+      steam.userData.baseX = steam.position.x;
+      steam.userData.baseZ = steam.position.z;
+      steam.userData.phase = Math.random() * Math.PI * 2;
+      desk.add(steam);
+      this._steamParticles.push(steam);
+    }
 
-    // Paper stack
+    // ─── PAPER STACK (askew, one sticking out) ───
     const paperMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF5, roughness: 0.9 });
-    for (let i = 0; i < 3; i++) {
-      const paperGeo = new THREE.BoxGeometry(0.18, 0.008, 0.25);
-      const paper = new THREE.Mesh(paperGeo, paperMat);
-      paper.position.set(0.7, 0.90 + i * 0.009, 0.15);
-      paper.rotation.y = -0.05 + i * 0.03;
+    const manilaMat = new THREE.MeshStandardMaterial({ color: 0xF5E8C8, roughness: 0.85 });
+    const paperMats = [paperMat, manilaMat, paperMat, manilaMat];
+    for (let i = 0; i < 4; i++) {
+      const paperGeo = new THREE.BoxGeometry(0.18, 0.006, 0.25);
+      const paper = new THREE.Mesh(paperGeo, paperMats[i]);
+      paper.position.set(0.7 + (i === 2 ? 0.03 : 0), 0.90 + i * 0.007, 0.15 + (i === 2 ? 0.02 : 0));
+      paper.rotation.y = -0.04 + i * 0.025;
       paper.castShadow = true;
       desk.add(paper);
     }
 
-    // Clipboard
+    // ─── PEN CUP + PENS ───
+    const cupGeo = new THREE.CylinderGeometry(0.03, 0.025, 0.08, 12);
+    const cupMat = new THREE.MeshStandardMaterial({ color: 0x3D9B8F, roughness: 0.4 });
+    const cup = new THREE.Mesh(cupGeo, cupMat);
+    cup.position.set(-0.55, 0.93, 0.35);
+    cup.castShadow = true;
+    desk.add(cup);
+    // Pens
+    const penColors = [0x2C2C3A, 0x3D9B8F, 0xE8A832];
+    for (let i = 0; i < 3; i++) {
+      const penGeo = new THREE.CylinderGeometry(0.004, 0.004, 0.12, 6);
+      const penMat = new THREE.MeshStandardMaterial({ color: penColors[i], roughness: 0.3 });
+      const pen = new THREE.Mesh(penGeo, penMat);
+      pen.position.set(-0.55 + (i - 1) * 0.01, 0.99, 0.35 + (i - 1) * 0.008);
+      pen.rotation.z = (i - 1) * 0.12;
+      pen.rotation.x = (i - 1) * 0.06;
+      desk.add(pen);
+    }
+
+    // ─── PILL BOTTLES (tier colors!) ───
+    const pillColors = [0x3D9B8F, 0x7C5CFC, 0xE8A832];
+    const pillHeights = [0.065, 0.05, 0.055];
+    const pillRadii = [0.018, 0.015, 0.016];
+    for (let i = 0; i < 3; i++) {
+      const pillGeo = new THREE.CylinderGeometry(pillRadii[i], pillRadii[i], pillHeights[i], 10);
+      const pillMat = new THREE.MeshStandardMaterial({ color: pillColors[i], roughness: 0.35, metalness: 0.05 });
+      const pill = new THREE.Mesh(pillGeo, pillMat);
+      pill.position.set(0.45 + i * 0.045, 0.90 + pillHeights[i] / 2, 0.35);
+      pill.castShadow = true;
+      desk.add(pill);
+      // White cap
+      const capGeo = new THREE.CylinderGeometry(pillRadii[i] + 0.002, pillRadii[i] + 0.002, 0.012, 10);
+      const capMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF5, roughness: 0.4 });
+      const cap = new THREE.Mesh(capGeo, capMat);
+      cap.position.set(0.45 + i * 0.045, 0.90 + pillHeights[i] + 0.006, 0.35);
+      desk.add(cap);
+    }
+
+    // ─── NAMEPLATE "Dr. ICU" ───
+    const npCanvas = document.createElement('canvas');
+    npCanvas.width = 256; npCanvas.height = 64;
+    const npCtx = npCanvas.getContext('2d');
+    npCtx.fillStyle = '#2C3E50';
+    npCtx.fillRect(0, 0, 256, 64);
+    npCtx.fillStyle = '#3D9B8F';
+    npCtx.font = 'bold 28px Georgia, serif';
+    npCtx.textAlign = 'center';
+    npCtx.fillText('Dr. ICU', 128, 42);
+    const npTex = new THREE.CanvasTexture(npCanvas);
+    const npGeo = new THREE.BoxGeometry(0.2, 0.06, 0.04);
+    const npMat = new THREE.MeshStandardMaterial({ color: 0x2C3E50, roughness: 0.3, metalness: 0.2 });
+    const nameplate = new THREE.Mesh(npGeo, npMat);
+    nameplate.position.set(-0.15, 0.93, 0.5);
+    nameplate.castShadow = true;
+    desk.add(nameplate);
+    // Text face
+    const npFaceGeo = new THREE.PlaneGeometry(0.18, 0.04);
+    const npFaceMat = new THREE.MeshStandardMaterial({ map: npTex });
+    const npFace = new THREE.Mesh(npFaceGeo, npFaceMat);
+    npFace.position.set(-0.15, 0.93, 0.521);
+    desk.add(npFace);
+
+    // ─── PHONE face-down ───
+    const phoneGeo = new THREE.BoxGeometry(0.08, 0.008, 0.14);
+    const phoneMat = new THREE.MeshStandardMaterial({ color: 0x2C2C3A, roughness: 0.2, metalness: 0.3 });
+    const phone = new THREE.Mesh(phoneGeo, phoneMat);
+    phone.position.set(0.35, 0.895, 0.4);
+    phone.rotation.y = 0.15;
+    desk.add(phone);
+
+    // ─── CLIPBOARD (leaning) ───
     const clipGeo = new THREE.BoxGeometry(0.22, 0.32, 0.012);
     const clipMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF5, roughness: 0.7 });
     const clipboard = new THREE.Mesh(clipGeo, clipMat);
@@ -2021,53 +2121,257 @@ class SceneManager {
     clipboard.rotation.z = 0.26;
     clipboard.rotation.x = -0.15;
     desk.add(clipboard);
-    // Clip
     const clipTopGeo = new THREE.BoxGeometry(0.12, 0.03, 0.015);
-    const clipTopMat = new THREE.MeshStandardMaterial({ color: 0xE0DBD2, metalness: 0.3, roughness: 0.4 });
+    const clipTopMat = new THREE.MeshStandardMaterial({ color: 0xC8B89A, metalness: 0.4, roughness: 0.3 });
     const clipTop = new THREE.Mesh(clipTopGeo, clipTopMat);
     clipTop.position.set(-1.0, 1.21, -0.25);
     clipTop.rotation.z = 0.26;
     clipTop.rotation.x = -0.15;
     desk.add(clipTop);
 
+    // ─── SMALL PLANT on desk corner ───
+    const potGeo = new THREE.CylinderGeometry(0.035, 0.028, 0.06, 10);
+    const potMat = new THREE.MeshStandardMaterial({ color: 0x3D9B8F, roughness: 0.6 });
+    const pot = new THREE.Mesh(potGeo, potMat);
+    pot.position.set(1.15, 0.92, 0.1);
+    pot.castShadow = true;
+    desk.add(pot);
+    // Dirt
+    const dirtGeo = new THREE.CircleGeometry(0.032, 10);
+    const dirtMat = new THREE.MeshStandardMaterial({ color: 0x5C3D2E, roughness: 0.95 });
+    const dirt = new THREE.Mesh(dirtGeo, dirtMat);
+    dirt.position.set(1.15, 0.951, 0.1);
+    dirt.rotation.x = -Math.PI / 2;
+    desk.add(dirt);
+    // Leaves (double-sided planes with slight sway via userData)
+    this._plantLeaves = [];
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x4AAF5C, roughness: 0.7, side: THREE.DoubleSide });
+    for (let i = 0; i < 5; i++) {
+      const leafGeo = new THREE.PlaneGeometry(0.04, 0.06);
+      const leaf = new THREE.Mesh(leafGeo, leafMat.clone());
+      const angle = (i / 5) * Math.PI * 2;
+      leaf.position.set(
+        1.15 + Math.cos(angle) * 0.02,
+        0.98 + i * 0.008,
+        0.1 + Math.sin(angle) * 0.02
+      );
+      leaf.rotation.y = angle;
+      leaf.rotation.x = -0.4 + Math.random() * 0.2;
+      leaf.rotation.z = (Math.random() - 0.5) * 0.3;
+      leaf.userData.phase = Math.random() * Math.PI * 2;
+      desk.add(leaf);
+      this._plantLeaves.push(leaf);
+    }
+
     this._scene.add(desk);
 
-    // ─── BACK WALL ─── warm cream with subtle texture feel
+    // ─── BACK WALL with gradient + baseboard ───
+    const wallCanvas = document.createElement('canvas');
+    wallCanvas.width = 512; wallCanvas.height = 512;
+    const wCtx = wallCanvas.getContext('2d');
+    const wallGrad = wCtx.createLinearGradient(0, 0, 0, 512);
+    wallGrad.addColorStop(0, '#e8e4d8');
+    wallGrad.addColorStop(0.7, '#ddd8cc');
+    wallGrad.addColorStop(0.82, '#d5d0c4');
+    wallGrad.addColorStop(0.83, '#c8c0b0');
+    wallGrad.addColorStop(1, '#d2cdc0');
+    wCtx.fillStyle = wallGrad;
+    wCtx.fillRect(0, 0, 512, 512);
+    const wallTexture = new THREE.CanvasTexture(wallCanvas);
     const wallGeo = new THREE.PlaneGeometry(6, 4);
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xF0EBE0, roughness: 0.92, metalness: 0, envMapIntensity: 0.05 });
+    const wallMat = new THREE.MeshStandardMaterial({ map: wallTexture, roughness: 0.92, metalness: 0 });
     const wall = new THREE.Mesh(wallGeo, wallMat);
     wall.position.set(0, 2, -2);
     wall.receiveShadow = true;
     this._scene.add(wall);
 
-    // Diploma frame
-    const frameGeo = new THREE.BoxGeometry(0.6, 0.45, 0.03);
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0xE0DBD2, metalness: 0.2, roughness: 0.6 });
+    // ─── DIPLOMA (slightly crooked — Pixar style) ───
+    const frameGeo = new THREE.BoxGeometry(0.42, 0.32, 0.025);
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x8B6E4E, metalness: 0.15, roughness: 0.7 });
     const frame = new THREE.Mesh(frameGeo, frameMat);
-    frame.position.set(1.2, 2.3, -1.98);
+    frame.position.set(1.3, 2.35, -1.98);
+    frame.rotation.z = 0.035;
+    frame.castShadow = true;
     this._scene.add(frame);
-    const innerGeo = new THREE.PlaneGeometry(0.5, 0.35);
-    const innerMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF5 });
+    const innerGeo = new THREE.PlaneGeometry(0.34, 0.24);
+    const innerMat = new THREE.MeshStandardMaterial({ color: 0xFFFCF0 });
     const inner = new THREE.Mesh(innerGeo, innerMat);
-    inner.position.set(1.2, 2.3, -1.965);
+    inner.position.set(1.3, 2.35, -1.965);
+    inner.rotation.z = 0.035;
     this._scene.add(inner);
-
-    // Shelf
-    const shelfGeo = new THREE.BoxGeometry(1.2, 0.04, 0.25);
-    const shelfMat = new THREE.MeshStandardMaterial({ color: 0xE0DBD2 });
-    const shelf = new THREE.Mesh(shelfGeo, shelfMat);
-    shelf.position.set(-0.8, 2.5, -1.88);
-    this._scene.add(shelf);
-    // Books on shelf
-    const bookColors = [0x3D9B8F, 0x7C5CFC, 0xE8A832, 0x2A7A6F];
-    for (let i = 0; i < 4; i++) {
-      const bookGeo = new THREE.BoxGeometry(0.06, 0.18 + Math.random() * 0.06, 0.15);
-      const bookMat = new THREE.MeshStandardMaterial({ color: bookColors[i], roughness: 0.8 });
-      const book = new THREE.Mesh(bookGeo, bookMat);
-      book.position.set(-1.1 + i * 0.12, 2.62 + (Math.random() - 0.5) * 0.02, -1.88);
-      book.rotation.z = (Math.random() - 0.5) * 0.05;
-      this._scene.add(book);
+    // Diploma text (tiny decorative lines)
+    const dipCanvas = document.createElement('canvas');
+    dipCanvas.width = 256; dipCanvas.height = 180;
+    const dipCtx = dipCanvas.getContext('2d');
+    dipCtx.fillStyle = '#FFFCF0';
+    dipCtx.fillRect(0, 0, 256, 180);
+    dipCtx.fillStyle = '#8B6E4E';
+    dipCtx.font = 'italic 11px serif';
+    dipCtx.textAlign = 'center';
+    dipCtx.fillText('University of Health Sciences', 128, 30);
+    dipCtx.font = 'bold 16px serif';
+    dipCtx.fillText('Medical Degree', 128, 60);
+    dipCtx.strokeStyle = '#d0c8b8';
+    dipCtx.lineWidth = 0.5;
+    for (let y = 80; y < 150; y += 14) {
+      dipCtx.beginPath(); dipCtx.moveTo(40, y); dipCtx.lineTo(216, y); dipCtx.stroke();
     }
+    dipCtx.fillStyle = '#E8A832';
+    dipCtx.beginPath(); dipCtx.arc(128, 155, 8, 0, Math.PI * 2); dipCtx.fill();
+    const dipTex = new THREE.CanvasTexture(dipCanvas);
+    const dipPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.24), new THREE.MeshStandardMaterial({ map: dipTex }));
+    dipPlane.position.set(1.3, 2.35, -1.963);
+    dipPlane.rotation.z = 0.035;
+    this._scene.add(dipPlane);
+
+    // ─── WALL CLOCK (real-time!) ───
+    const clockGroup = new THREE.Group();
+    clockGroup.position.set(0.4, 2.6, -1.97);
+    // Rim
+    const clockRim = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18, 0.18, 0.03, 24),
+      new THREE.MeshStandardMaterial({ color: 0x3D9B8F, roughness: 0.35, metalness: 0.2 })
+    );
+    clockRim.rotation.x = Math.PI / 2;
+    clockGroup.add(clockRim);
+    // Face
+    const clockFace = new THREE.Mesh(
+      new THREE.CircleGeometry(0.16, 24),
+      new THREE.MeshStandardMaterial({ color: 0xFFFCF5, roughness: 0.8 })
+    );
+    clockFace.position.z = 0.016;
+    clockGroup.add(clockFace);
+    // Hour markers
+    for (let i = 0; i < 12; i++) {
+      const markerGeo = new THREE.BoxGeometry(0.008, i % 3 === 0 ? 0.025 : 0.015, 0.002);
+      const markerMat = new THREE.MeshStandardMaterial({ color: 0x2C2C3A });
+      const marker = new THREE.Mesh(markerGeo, markerMat);
+      const angle = (i / 12) * Math.PI * 2;
+      marker.position.set(Math.sin(angle) * 0.13, Math.cos(angle) * 0.13, 0.017);
+      marker.rotation.z = -angle;
+      clockGroup.add(marker);
+    }
+    // Hour hand
+    const hourHand = new THREE.Mesh(
+      new THREE.BoxGeometry(0.012, 0.08, 0.003),
+      new THREE.MeshStandardMaterial({ color: 0x2C2C3A })
+    );
+    hourHand.geometry.translate(0, 0.04, 0);
+    hourHand.position.z = 0.018;
+    clockGroup.add(hourHand);
+    this._clockHourHand = hourHand;
+    // Minute hand
+    const minuteHand = new THREE.Mesh(
+      new THREE.BoxGeometry(0.008, 0.11, 0.003),
+      new THREE.MeshStandardMaterial({ color: 0x2C2C3A })
+    );
+    minuteHand.geometry.translate(0, 0.055, 0);
+    minuteHand.position.z = 0.019;
+    clockGroup.add(minuteHand);
+    this._clockMinuteHand = minuteHand;
+    // Center dot
+    clockGroup.add(new THREE.Mesh(
+      new THREE.CircleGeometry(0.01, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3D9B8F })
+    ).translateZ(0.02));
+    this._scene.add(clockGroup);
+
+    // ─── ANATOMY POSTER ───
+    const postCanvas = document.createElement('canvas');
+    postCanvas.width = 200; postCanvas.height = 300;
+    const pCtx = postCanvas.getContext('2d');
+    pCtx.fillStyle = '#f5f0e8';
+    pCtx.fillRect(0, 0, 200, 300);
+    pCtx.fillStyle = '#3D9B8F';
+    pCtx.fillRect(0, 0, 200, 32);
+    pCtx.fillStyle = '#ffffff';
+    pCtx.font = 'bold 13px sans-serif';
+    pCtx.textAlign = 'center';
+    pCtx.fillText('HUMAN BODY', 100, 22);
+    pCtx.strokeStyle = '#3D9B8F';
+    pCtx.lineWidth = 1.5;
+    pCtx.beginPath();
+    pCtx.arc(100, 75, 18, 0, Math.PI * 2);
+    pCtx.moveTo(100, 93); pCtx.lineTo(100, 180);
+    pCtx.moveTo(100, 120); pCtx.lineTo(70, 155);
+    pCtx.moveTo(100, 120); pCtx.lineTo(130, 155);
+    pCtx.moveTo(100, 180); pCtx.lineTo(78, 250);
+    pCtx.moveTo(100, 180); pCtx.lineTo(122, 250);
+    pCtx.stroke();
+    // Label lines
+    pCtx.strokeStyle = '#c0b8a8';
+    pCtx.lineWidth = 0.8;
+    for (let y = 100; y < 240; y += 30) {
+      pCtx.beginPath(); pCtx.moveTo(135, y); pCtx.lineTo(175, y); pCtx.stroke();
+    }
+    pCtx.fillStyle = '#3D9B8F';
+    pCtx.font = '8px sans-serif';
+    pCtx.fillText('🌿', 100, 280);
+    const postTex = new THREE.CanvasTexture(postCanvas);
+    const poster = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.28, 0.42),
+      new THREE.MeshStandardMaterial({ map: postTex })
+    );
+    poster.position.set(-0.3, 2.35, -1.97);
+    this._scene.add(poster);
+
+    // ─── LETTER BOARD ───
+    const lbCanvas = document.createElement('canvas');
+    lbCanvas.width = 256; lbCanvas.height = 128;
+    const lbCtx = lbCanvas.getContext('2d');
+    lbCtx.fillStyle = '#1a1a1a';
+    lbCtx.fillRect(0, 0, 256, 128);
+    lbCtx.fillStyle = '#ffffff';
+    lbCtx.font = 'bold 22px monospace';
+    lbCtx.textAlign = 'center';
+    lbCtx.fillText('I SEE YOU', 128, 50);
+    lbCtx.font = '14px monospace';
+    lbCtx.fillText('TAKE CARE', 128, 85);
+    lbCtx.fillStyle = '#3D9B8F';
+    lbCtx.fillText('❤', 128, 110);
+    const lbTex = new THREE.CanvasTexture(lbCanvas);
+    // Frame
+    const lbFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.16, 0.015),
+      new THREE.MeshStandardMaterial({ color: 0xD5C4A8, roughness: 0.6 })
+    );
+    lbFrame.position.set(-1.1, 2.15, -1.98);
+    this._scene.add(lbFrame);
+    const lbFace = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.24, 0.12),
+      new THREE.MeshStandardMaterial({ map: lbTex })
+    );
+    lbFace.position.set(-1.1, 2.15, -1.971);
+    this._scene.add(lbFace);
+
+    // ─── SHELF with colorful books ───
+    const shelfGeo = new THREE.BoxGeometry(1.2, 0.04, 0.25);
+    const shelfMat = new THREE.MeshStandardMaterial({ color: 0xD5C4A8, roughness: 0.6 });
+    const shelf = new THREE.Mesh(shelfGeo, shelfMat);
+    shelf.position.set(-1.15, 2.5, -1.88);
+    shelf.castShadow = true;
+    this._scene.add(shelf);
+    // Books — varied heights, tier colors, slightly messy
+    const bookData = [
+      { w: 0.065, h: 0.22, color: 0x3D9B8F },
+      { w: 0.055, h: 0.18, color: 0x7C5CFC },
+      { w: 0.07, h: 0.20, color: 0xE8A832 },
+      { w: 0.05, h: 0.24, color: 0x2A7A6F },
+      { w: 0.045, h: 0.16, color: 0xD5615E },
+      { w: 0.06, h: 0.19, color: 0xFFFCF5 },
+    ];
+    let bx = -1.53;
+    bookData.forEach(b => {
+      const bookMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(b.w, b.h, 0.15),
+        new THREE.MeshStandardMaterial({ color: b.color, roughness: 0.75 })
+      );
+      bookMesh.position.set(bx, 2.52 + b.h / 2, -1.88);
+      bookMesh.rotation.z = (Math.random() - 0.5) * 0.06;
+      bookMesh.castShadow = true;
+      this._scene.add(bookMesh);
+      bx += b.w + 0.01;
+    });
   }
 
   // ─── PARTICLES (dust motes catching light) ───
@@ -2581,9 +2885,42 @@ class SceneManager {
 
     // (Search panel is now below the scene — no CSS projection needed)
 
-    // ── Duck sway (replaces foliage) ──
+    // ── Duck sway ──
     if (this._duck) {
       this._duck.rotation.y = Math.sin(elapsed * 0.5) * 0.08;
+    }
+
+    // ── Coffee steam animation ──
+    if (this._steamParticles) {
+      for (const s of this._steamParticles) {
+        s.position.y += s.userData.speed * dt;
+        s.position.x = s.userData.baseX + Math.sin(elapsed * 1.2 + s.userData.phase) * 0.008;
+        s.position.z = s.userData.baseZ + Math.cos(elapsed * 0.8 + s.userData.phase) * 0.005;
+        s.material.opacity = Math.max(0, 0.22 - (s.position.y - 1.0) * 0.6);
+        s.scale.setScalar(1 + (s.position.y - 1.0) * 1.5);
+        if (s.position.y > 1.2) {
+          s.position.y = 1.0;
+          s.material.opacity = 0.22;
+          s.scale.setScalar(1);
+        }
+      }
+    }
+
+    // ── Plant leaf sway ──
+    if (this._plantLeaves) {
+      for (const leaf of this._plantLeaves) {
+        leaf.rotation.z += Math.sin(elapsed * 0.8 + leaf.userData.phase) * 0.0003;
+        leaf.rotation.x += Math.cos(elapsed * 0.6 + leaf.userData.phase * 1.5) * 0.0002;
+      }
+    }
+
+    // ── Wall clock (real-time) ──
+    if (this._clockHourHand && this._clockMinuteHand) {
+      const now = new Date();
+      const h = now.getHours() % 12;
+      const m = now.getMinutes();
+      this._clockHourHand.rotation.z = -(h + m / 60) * (Math.PI * 2 / 12);
+      this._clockMinuteHand.rotation.z = -m * (Math.PI * 2 / 60);
     }
 
     // ── Character animation ──
