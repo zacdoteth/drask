@@ -81,7 +81,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, #E8F5F2 0%, #FFFCF5 100%);
+    background: #B8DDD3;
     z-index: 20;
     transition: opacity 0.8s ease-out;
   }
@@ -91,10 +91,9 @@
   }
   .loading-content { text-align: center; }
   .loading-duck-canvas {
-    width: 160px;
-    height: 160px;
-    margin: 0 auto 12px;
-    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 20px;
     display: block;
   }
   .loading-logo {
@@ -1313,9 +1312,6 @@
   <div class="scene-loading" id="scene-loading">
     <div class="loading-content">
       <canvas class="loading-duck-canvas" id="loading-duck-canvas" width="320" height="320"></canvas>
-      <div class="loading-logo">
-        <span class="loading-dr">Dr.</span><span class="loading-icu">ICU</span>
-      </div>
       <div class="loading-bar-track">
         <div class="loading-bar-fill" id="loading-bar-fill"></div>
       </div>
@@ -1354,7 +1350,6 @@
           </div>
           <div class="search-row" id="search-row">
             <input type="text" class="search-input" id="search-input" placeholder="How can I help you today?" autocomplete="off">
-            <span class="credit-badge" id="credit-badge">&#128300; <span id="credit-count">3</span> credits</span>
             <button class="ask-btn" id="ask-btn">Ask!</button>
           </div>
         </div>
@@ -1509,24 +1504,33 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   const canvas = document.getElementById('loading-duck-canvas');
   if (!canvas) return;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(160, 160);
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  } catch(e) { console.warn('Loading duck: WebGL init failed', e); return; }
+  const dpr = Math.min(window.devicePixelRatio, 2);
+  const w = 200, h = 200;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  renderer.setSize(w * dpr, h * dpr, false);
+  renderer.setViewport(0, 0, w * dpr, h * dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.LinearToneMapping;
-  renderer.toneMappingExposure = 0.75;
+  renderer.toneMappingExposure = 0.85;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
-  camera.position.set(0, 0.3, 2.2);
-  camera.lookAt(0, 0.15, 0);
+  scene.background = new THREE.Color('#B8DDD3');
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+  camera.position.set(0, 0.4, 2.5);
+  camera.lookAt(0, 0.1, 0);
 
-  // Lights
-  scene.add(new THREE.HemisphereLight(0xE8F5F2, 0xD5CFC5, 0.6));
-  const key = new THREE.DirectionalLight(0xFFF8F0, 0.8);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  const key = new THREE.DirectionalLight(0xFFF8F0, 1.0);
   key.position.set(2, 3, 3);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xD8F0F0, 0.3);
+  const fill = new THREE.DirectionalLight(0xD8F0F0, 0.4);
   fill.position.set(-2, 1, 2);
   scene.add(fill);
 
@@ -1536,16 +1540,17 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
   new GLTFLoader().load('public/duck.glb', (gltf) => {
     duck = gltf.scene;
-    duck.traverse(c => { if (c.isMesh) { c.material.envMapIntensity = 0.05; } });
     const box = new THREE.Box3().setFromObject(duck);
     const size = box.getSize(new THREE.Vector3());
-    const s = 0.9 / Math.max(size.x, size.y, size.z);
+    const s = 1.0 / Math.max(size.x, size.y, size.z);
     duck.scale.setScalar(s);
     box.setFromObject(duck);
     const center = box.getCenter(new THREE.Vector3());
     duck.position.sub(center);
-    duck.position.y += size.y * s * 0.05;
     scene.add(duck);
+    console.log('Loading duck: model loaded');
+  }, undefined, (err) => {
+    console.warn('Loading duck: GLB failed', err);
   });
 
   function animate() {
@@ -1554,16 +1559,15 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const t = clock.getElapsedTime();
     if (duck) {
       duck.rotation.y = t * 0.8;
-      duck.position.y = Math.sin(t * 1.5) * 0.03;
+      duck.position.y = Math.sin(t * 1.5) * 0.025;
     }
     renderer.render(scene, camera);
   }
   animate();
 
-  // Cleanup when loading screen is removed
   window._stopLoadingDuck = () => {
     alive = false;
-    renderer.dispose();
+    try { renderer.dispose(); } catch(e) {}
   };
 })();
 
@@ -2817,35 +2821,14 @@ Rules: Never diagnose or prescribe. Always remind users to consult their healthc
 };
 
 let currentTier = 'quick';
-let userCredits = 3; // Free starter credits for Deep Research
 
 // ═══ TIER SELECTION ═══
 const tierBtns = document.querySelectorAll('.tier-btn');
 const searchRow = document.getElementById('search-row');
-const charWrap = null; // Removed: was char-wrap img wrapper
 const biosOverlay = document.getElementById('bios-overlay');
 const pricingOverlay = document.getElementById('pricing-overlay');
-const creditBadge = document.getElementById('credit-badge');
-const creditCountEl = document.getElementById('credit-count');
-
-function updateCreditBadge() {
-  creditCountEl.textContent = userCredits;
-  creditBadge.classList.toggle('visible', currentTier === 'bios' && userCredits > 0);
-}
-
-function updateFreeBanner() {
-  const banner = document.getElementById('pm-free-banner');
-  const text = document.getElementById('pm-free-text');
-  if (userCredits > 0) {
-    banner.style.display = '';
-    text.innerHTML = '&#127873; You have ' + userCredits + ' free credit' + (userCredits !== 1 ? 's' : '') + ' remaining!';
-  } else {
-    banner.style.display = 'none';
-  }
-}
 
 function showPricingModal() {
-  updateFreeBanner();
   pricingOverlay.classList.add('show');
 }
 
@@ -2859,17 +2842,12 @@ function activateBiosTier() {
   searchRow.className = 'search-row tier-bios';
   if (window._sceneManager) window._sceneManager.setTier('bios');
   document.getElementById('search-input').placeholder = 'e.g. Deep analysis of insulin resistance mechanisms...';
-  updateCreditBadge();
 }
 
 function setTier(tier) {
-  // If selecting bios tier, check credits
+  // Deep Research = show pricing modal to unlock
   if (tier === 'bios') {
-    if (userCredits > 0) {
-      activateBiosTier();
-    } else {
-      showPricingModal();
-    }
+    showPricingModal();
     return;
   }
 
@@ -2885,7 +2863,6 @@ function setTier(tier) {
     deep: 'e.g. Explain the full mechanism of insulin resistance...'
   };
   document.getElementById('search-input').placeholder = placeholders[tier] || placeholders.quick;
-  updateCreditBadge();
 }
 
 tierBtns.forEach(btn => {
@@ -3182,17 +3159,6 @@ function addResponseCard(type, content, tier) {
 
 async function askSage(question) {
   if (isProcessing || !question.trim()) return;
-
-  // Deep Research credit check
-  if (currentTier === 'bios') {
-    if (userCredits <= 0) {
-      showPricingModal();
-      return;
-    }
-    userCredits--;
-    updateCreditBadge();
-    updateFreeBanner();
-  }
 
   isProcessing = true;
 
