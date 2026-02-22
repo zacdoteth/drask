@@ -1066,6 +1066,48 @@
   }
   .followup-send:hover { filter: brightness(1.08); box-shadow: 0 4px 20px rgba(94,207,191,0.3); }
   .followup-send:active { transform: scale(0.97); }
+
+  /* ── Post-answer CTAs ── */
+  .answer-ctas {
+    background: #fff; border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 12px;
+  }
+  .cta-section-title {
+    font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-light);
+    margin-bottom: 10px;
+  }
+  .cta-pills {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .cta-pill {
+    font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 600;
+    padding: 7px 14px; border-radius: 20px; cursor: pointer;
+    background: var(--sage-pale); color: var(--sage-deep);
+    border: 1.5px solid rgba(61,155,143,0.15);
+    transition: all 0.15s; line-height: 1.3;
+  }
+  .cta-pill:hover {
+    background: var(--sage); color: #fff; border-color: var(--sage);
+    transform: translateY(-1px); box-shadow: 0 3px 12px rgba(61,155,143,0.2);
+  }
+  .cta-actions {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid var(--border); padding-top: 12px;
+  }
+  .cta-action {
+    font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700;
+    padding: 8px 16px; border-radius: 10px; cursor: pointer;
+    border: 1.5px solid var(--border); background: #fff; color: var(--text);
+    transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+  }
+  .cta-action:hover { border-color: var(--sage); color: var(--sage); }
+  .cta-action.primary {
+    background: linear-gradient(180deg, #4DB8A8 0%, #2A7A6F 100%);
+    color: #fff; border-color: var(--sage-deep);
+    box-shadow: 0 2px 12px rgba(61,155,143,0.2);
+  }
+  .cta-action.primary:hover { filter: brightness(1.08); }
   .typing-dots { display: flex; gap: 6px; padding: 6px 0; }
   .typing-dots span {
     width: 10px; height: 10px; border-radius: 50%;
@@ -1139,7 +1181,7 @@
   .trend-header span:nth-child(5) { text-align: center; }
 
   /* ── Trend rows ── */
-  .trend-list { max-height: 520px; overflow-y: auto; }
+  .trend-list { max-height: 680px; overflow-y: auto; }
   .trend-list::-webkit-scrollbar { width: 4px; }
   .trend-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
   .trending-q {
@@ -1518,10 +1560,11 @@
       <div class="trend-tab" data-cat="glp1">GLP-1s</div>
       <div class="trend-tab" data-cat="longevity">Longevity</div>
       <div class="trend-tab" data-cat="peptides">Peptides</div>
-      <div class="trend-tab" data-cat="tiktok">TikTok</div>
+      <div class="trend-tab" data-cat="tiktok">HealthTok</div>
       <div class="trend-tab" data-cat="nutrition">Nutrition</div>
       <div class="trend-tab" data-cat="sleep">Sleep</div>
       <div class="trend-tab" data-cat="recovery">Recovery</div>
+      <div class="trend-tab" data-cat="protein">Protein</div>
     </div>
     <div class="trend-header">
       <span>#</span><span>Query</span><span>Interest</span><span>Change</span><span>30d</span>
@@ -1551,6 +1594,30 @@
       <div class="trending-q" data-q="Dasatinib + quercetin as senolytics — can they clear zombie cells safely?" data-cat="longevity"><span class="rank">22</span><span class="q">Senolytics (dasatinib + quercetin) — safe?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:42%"></span></span></span><span class="trend-change up">+35%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,14 32,12 40,9 48,7 56,5 64,4 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,14 32,12 40,9 48,7 56,5 64,4"/></svg></div>
       <div class="trending-q" data-q="Testosterone, estrogen, DHEA — what does real hormone optimization look like?" data-cat="longevity"><span class="rank">23</span><span class="q">Hormone optimization — what's evidence-based?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:54%"></span></span></span><span class="trend-change up">+10%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,9 64,9 64,24 0,24"/><polyline points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,9 64,9"/></svg></div>
       <div class="trending-q" data-q="Can beef tallow replace moisturizer for glowing skin, or does it clog pores?" data-cat="tiktok"><span class="rank">24</span><span class="q">Beef tallow as skincare — legit or gross?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:44%"></span></span></span><span class="trend-change up">+520%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,14 24,8 32,4 40,3 48,5 56,8 64,10 64,24 0,24"/><polyline points="0,22 8,20 16,14 24,8 32,4 40,3 48,5 56,8 64,10"/></svg></div>
+      <div class="trending-q" data-q="Ozempic face: can you prevent facial aging from rapid GLP-1 weight loss?" data-cat="glp1"><span class="rank">25</span><span class="q">Ozempic face — can you prevent it?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:74%"></span></span></span><span class="trend-change up">+85%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,15 24,12 32,9 40,6 48,4 56,3 64,3 64,24 0,24"/><polyline points="0,20 8,18 16,15 24,12 32,9 40,6 48,4 56,3 64,3"/></svg></div>
+      <div class="trending-q" data-q="GLP-1 rebound weight gain — is it inevitable when you stop Ozempic?" data-cat="glp1"><span class="rank">26</span><span class="q">GLP-1 rebound weight — inevitable?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:70%"></span></span></span><span class="trend-change up">+62%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,17 16,14 24,11 32,8 40,6 48,5 56,4 64,4 64,24 0,24"/><polyline points="0,20 8,17 16,14 24,11 32,8 40,6 48,5 56,4 64,4"/></svg></div>
+      <div class="trending-q" data-q="Can berberine or fiber naturally boost GLP-1 without injections?" data-cat="glp1 nutrition"><span class="rank">27</span><span class="q">Natural GLP-1 boosters — berberine, fiber?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:58%"></span></span></span><span class="trend-change up">+48%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,13 32,10 40,8 48,6 56,5 64,5 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,13 32,10 40,8 48,6 56,5 64,5"/></svg></div>
+      <div class="trending-q" data-q="Compounded semaglutide safety — legit pharmacies vs sketchy sources?" data-cat="glp1"><span class="rank">28</span><span class="q">Compounded semaglutide — safe sources?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:62%"></span></span></span><span class="trend-change down">-12%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,16 8,10 16,5 24,3 32,4 40,6 48,9 56,11 64,13 64,24 0,24"/><polyline points="0,16 8,10 16,5 24,3 32,4 40,6 48,9 56,11 64,13"/></svg></div>
+      <div class="trending-q" data-q="NAD+ IV drips worth $500+: cellular rejuvenation or expensive urine?" data-cat="longevity"><span class="rank">29</span><span class="q">NAD+ IV drips — worth $500?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:48%"></span></span></span><span class="trend-change up">+15%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,14 8,13 16,12 24,12 32,11 40,11 48,10 56,10 64,9 64,24 0,24"/><polyline points="0,14 8,13 16,12 24,12 32,11 40,11 48,10 56,10 64,9"/></svg></div>
+      <div class="trending-q" data-q="Metformin for non-diabetics — longevity hack or unnecessary medication?" data-cat="longevity"><span class="rank">30</span><span class="q">Metformin for longevity — worth it?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:50%"></span></span></span><span class="trend-change up">+8%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,10 64,9 64,24 0,24"/><polyline points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,10 64,9"/></svg></div>
+      <div class="trending-q" data-q="Biological age tests — which ones actually measure aging accurately?" data-cat="testing longevity"><span class="rank">31</span><span class="q">Biological age tests — which ones work?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:46%"></span></span></span><span class="trend-change up">+40%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,14 32,11 40,8 48,6 56,5 64,4 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,14 32,11 40,8 48,6 56,5 64,4"/></svg></div>
+      <div class="trending-q" data-q="Continuous glucose monitors for non-diabetics — useful data or expensive toy?" data-cat="testing"><span class="rank">32</span><span class="q">CGMs for non-diabetics — useful?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:52%"></span></span></span><span class="trend-change down">-6%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,14 8,8 16,4 24,3 32,4 40,6 48,8 56,10 64,11 64,24 0,24"/><polyline points="0,14 8,8 16,4 24,3 32,4 40,6 48,8 56,10 64,11"/></svg></div>
+      <div class="trending-q" data-q="How much protein is too much for kidneys? What's the actual safe limit?" data-cat="protein nutrition"><span class="rank">33</span><span class="q">Too much protein — kidney damage real?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:56%"></span></span></span><span class="trend-change up">+5%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,12 8,11 16,12 24,11 32,11 40,10 48,11 56,10 64,10 64,24 0,24"/><polyline points="0,12 8,11 16,12 24,11 32,11 40,10 48,11 56,10 64,10"/></svg></div>
+      <div class="trending-q" data-q="Plant vs animal protein absorption — does the difference actually matter for muscle?" data-cat="protein nutrition"><span class="rank">34</span><span class="q">Plant vs animal protein — real difference?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:44%"></span></span></span><span class="trend-change up">+7%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,13 8,12 16,12 24,11 32,12 40,11 48,11 56,10 64,10 64,24 0,24"/><polyline points="0,13 8,12 16,12 24,11 32,12 40,11 48,11 56,10 64,10"/></svg></div>
+      <div class="trending-q" data-q="Best protein timing — is the post-workout anabolic window real or broscience?" data-cat="protein recovery"><span class="rank">35</span><span class="q">Post-workout protein window — real or myth?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:48%"></span></span></span><span class="trend-change down">-3%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,10 8,8 16,6 24,5 32,6 40,7 48,8 56,9 64,10 64,24 0,24"/><polyline points="0,10 8,8 16,6 24,5 32,6 40,7 48,8 56,9 64,10"/></svg></div>
+      <div class="trending-q" data-q="Dopamine detox — does screen abstinence actually reset brain chemistry?" data-cat="tiktok"><span class="rank">36</span><span class="q">Dopamine detox — does it reset your brain?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:52%"></span></span></span><span class="trend-change down">-10%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,14 8,8 16,4 24,3 32,5 40,8 48,10 56,12 64,14 64,24 0,24"/><polyline points="0,14 8,8 16,4 24,3 32,5 40,8 48,10 56,12 64,14"/></svg></div>
+      <div class="trending-q" data-q="Face taping for wrinkles — temporary illusion or real anti-aging hack?" data-cat="tiktok"><span class="rank">37</span><span class="q">Face taping for wrinkles — does it work?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:40%"></span></span></span><span class="trend-change up">+340%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,16 24,10 32,5 40,3 48,4 56,6 64,8 64,24 0,24"/><polyline points="0,22 8,20 16,16 24,10 32,5 40,3 48,4 56,6 64,8"/></svg></div>
+      <div class="trending-q" data-q="Raw carrot salad for hormone balance — any evidence or pure TikTok myth?" data-cat="tiktok nutrition"><span class="rank">38</span><span class="q">Carrot salad for hormones — real science?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:38%"></span></span></span><span class="trend-change up">+280%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,19 16,14 24,8 32,4 40,3 48,5 56,8 64,10 64,24 0,24"/><polyline points="0,22 8,19 16,14 24,8 32,4 40,3 48,5 56,8 64,10"/></svg></div>
+      <div class="trending-q" data-q="Adrenal cocktail (OJ + cream of tartar + salt) — does it fix fatigue?" data-cat="tiktok"><span class="rank">39</span><span class="q">Adrenal cocktails — do they fix fatigue?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:42%"></span></span></span><span class="trend-change up">+250%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,18 16,12 24,7 32,4 40,3 48,5 56,7 64,9 64,24 0,24"/><polyline points="0,22 8,18 16,12 24,7 32,4 40,3 48,5 56,7 64,9"/></svg></div>
+      <div class="trending-q" data-q="Should I avoid spinach and nuts to prevent kidney stones? The oxalate debate" data-cat="nutrition"><span class="rank">40</span><span class="q">Oxalates in spinach — avoid or overblown?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:36%"></span></span></span><span class="trend-change up">+32%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,18 8,16 16,14 24,12 32,10 40,8 48,7 56,6 64,5 64,24 0,24"/><polyline points="0,18 8,16 16,14 24,12 32,10 40,8 48,7 56,6 64,5"/></svg></div>
+      <div class="trending-q" data-q="Do lectins in beans cause leaky gut — is pressure cooking enough to neutralize?" data-cat="nutrition"><span class="rank">41</span><span class="q">Lectins in beans — leaky gut risk?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:34%"></span></span></span><span class="trend-change up">+12%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,14 8,13 16,13 24,12 32,12 40,11 48,11 56,10 64,10 64,24 0,24"/><polyline points="0,14 8,13 16,13 24,12 32,12 40,11 48,11 56,10 64,10"/></svg></div>
+      <div class="trending-q" data-q="Dry fasting (no water) for autophagy — dangerous dehydration or real benefit?" data-cat="tiktok"><span class="rank">42</span><span class="q">Dry fasting — autophagy boost or dangerous?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:32%"></span></span></span><span class="trend-change up">+180%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,18 16,12 24,6 32,4 40,3 48,5 56,8 64,10 64,24 0,24"/><polyline points="0,22 8,18 16,12 24,6 32,4 40,3 48,5 56,8 64,10"/></svg></div>
+      <div class="trending-q" data-q="Epigenetic clocks (GrimAge, PhenoAge) — accurate aging measure or just curiosity?" data-cat="testing longevity"><span class="rank">43</span><span class="q">Epigenetic clocks — real aging metric?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:30%"></span></span></span><span class="trend-change up">+55%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,14 32,11 40,8 48,6 56,5 64,4 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,14 32,11 40,8 48,6 56,5 64,4"/></svg></div>
+      <div class="trending-q" data-q="DUTCH hormone testing vs standard blood work — worth the extra cost?" data-cat="testing"><span class="rank">44</span><span class="q">DUTCH test vs blood work — worth it?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:28%"></span></span></span><span class="trend-change up">+18%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,16 8,15 16,14 24,13 32,12 40,11 48,10 56,9 64,9 64,24 0,24"/><polyline points="0,16 8,15 16,14 24,13 32,12 40,11 48,10 56,9 64,9"/></svg></div>
+      <div class="trending-q" data-q="Grounding/earthing for EMF protection — backed by science or pseudoscience?" data-cat="tiktok recovery"><span class="rank">45</span><span class="q">Grounding/earthing — science or woo?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:36%"></span></span></span><span class="trend-change up">+200%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,18 16,12 24,8 32,5 40,3 48,4 56,6 64,8 64,24 0,24"/><polyline points="0,22 8,18 16,12 24,8 32,5 40,3 48,4 56,6 64,8"/></svg></div>
+      <div class="trending-q" data-q="Post-Ozempic loose skin — surgery only option or can collagen and exercise help?" data-cat="glp1"><span class="rank">46</span><span class="q">Post-Ozempic loose skin — what helps?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:44%"></span></span></span><span class="trend-change up">+72%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,15 24,12 32,9 40,7 48,5 56,4 64,3 64,24 0,24"/><polyline points="0,20 8,18 16,15 24,12 32,9 40,7 48,5 56,4 64,3"/></svg></div>
+      <div class="trending-q" data-q="Peptide underground sources — how to tell legitimate from counterfeit?" data-cat="peptides"><span class="rank">47</span><span class="q">Peptide sourcing — legit vs counterfeit?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:40%"></span></span></span><span class="trend-change up">+10%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,10 64,9 64,24 0,24"/><polyline points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,10 64,9"/></svg></div>
+      <div class="trending-q" data-q="Sun gazing for vitamin D and circadian rhythm — beneficial or retinal damage?" data-cat="tiktok"><span class="rank">48</span><span class="q">Sun gazing — circadian benefit or eye damage?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:34%"></span></span></span><span class="trend-change up">+160%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,18 16,12 24,7 32,4 40,3 48,5 56,8 64,10 64,24 0,24"/><polyline points="0,22 8,18 16,12 24,7 32,4 40,3 48,5 56,8 64,10"/></svg></div>
     </div>
   </div>
   <div class="sidebar">
@@ -1620,9 +1687,9 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
   const scene = new THREE.Scene();
   // Transparent background — loading screen bg shows through
-  const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
-  camera.position.set(0, 0.2, 2.8);
-  camera.lookAt(0, 0, 0);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
+  camera.position.set(0, 0.15, 3.2);
+  camera.lookAt(0, -0.05, 0);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.8));
   const key = new THREE.DirectionalLight(0xFFF8F0, 1.2);
@@ -3749,12 +3816,60 @@ async function askSage(question) {
       showBubble(bubbleMessages.celebrating[Math.floor(Math.random() * bubbleMessages.celebrating.length)], 2500);
     }, 500);
 
-    // Add chat-style follow-up bar below the answer
+    // Add chat-style follow-up bar FIRST (right after answer)
     document.querySelectorAll('.followup-bar').forEach(el => el.remove());
     const followBar = document.createElement('div');
     followBar.className = 'followup-bar';
     followBar.innerHTML = '<div class="followup-icon">\u{1F9EC}</div><input type="text" class="followup-input" placeholder="Continue the conversation..." autocomplete="off"><button class="followup-send">Ask</button>';
     responseArea.appendChild(followBar);
+
+    // Add post-answer CTAs BELOW the follow-up bar
+    document.querySelectorAll('.answer-ctas').forEach(el => el.remove());
+    const ctaBlock = document.createElement('div');
+    ctaBlock.className = 'answer-ctas';
+
+    // Pick 3 related trending questions (skip current question)
+    const allTrending = Array.from(document.querySelectorAll('.trend-list .trending-q'));
+    const related = allTrending
+      .filter(el => el.dataset.q !== q)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    const pillsHtml = related.map(el => {
+      const short = el.querySelector('.q').childNodes[0].textContent.trim();
+      return `<div class="cta-pill" data-q="${el.dataset.q}">${short}</div>`;
+    }).join('');
+
+    ctaBlock.innerHTML = `
+      <div class="cta-section-title">People also ask</div>
+      <div class="cta-pills">${pillsHtml}</div>
+      <div class="cta-actions">
+        <div class="cta-action primary" id="cta-deep-research">&#x1F52C; Go Deeper with Deep Research</div>
+        <div class="cta-action" id="cta-share">&#x1F4CB; Copy Answer</div>
+        <div class="cta-action" id="cta-new">&#x2728; New Question</div>
+      </div>`;
+    responseArea.appendChild(ctaBlock);
+
+    // Wire CTA clicks
+    ctaBlock.querySelectorAll('.cta-pill').forEach(pill => {
+      pill.addEventListener('click', () => { ctaBlock.remove(); askSage(pill.dataset.q); });
+    });
+    const ctaDeep = ctaBlock.querySelector('#cta-deep-research');
+    if (ctaDeep) ctaDeep.addEventListener('click', () => {
+      ctaBlock.remove();
+      document.querySelectorAll('.tier-btn').forEach(b => {
+        if (b.dataset.tier === 'bios') b.click();
+      });
+      askSage(q);
+    });
+    const ctaShare = ctaBlock.querySelector('#cta-share');
+    if (ctaShare) ctaShare.addEventListener('click', () => {
+      navigator.clipboard.writeText(reply).then(() => {
+        ctaShare.innerHTML = '&#x2705; Copied!';
+        setTimeout(() => { ctaShare.innerHTML = '&#x1F4CB; Copy Answer'; }, 2000);
+      });
+    });
+    const ctaNew = ctaBlock.querySelector('#cta-new');
+    if (ctaNew) ctaNew.addEventListener('click', () => resetToHome());
     const fInput = followBar.querySelector('.followup-input');
     const fBtn = followBar.querySelector('.followup-send');
     const submitFollowup = () => {
