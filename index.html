@@ -1687,8 +1687,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
   const scene = new THREE.Scene();
   // Transparent background — loading screen bg shows through
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
-  camera.position.set(0, 0.15, 3.2);
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 50);
+  camera.position.set(0, 0.1, 3.0);
   camera.lookAt(0, -0.05, 0);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.8));
@@ -1712,6 +1712,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
     box.setFromObject(duck);
     const center = box.getCenter(new THREE.Vector3());
     duck.position.sub(center);
+    duck._baseY = duck.position.y;
     scene.add(duck);
     console.log('Loading duck: model loaded');
   }, undefined, (err) => {
@@ -1724,7 +1725,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
     const t = clock.getElapsedTime();
     if (duck) {
       duck.rotation.y = t * 0.8;
-      duck.position.y = Math.sin(t * 1.5) * 0.025;
+      duck.position.y = (duck._baseY || 0) + Math.sin(t * 1.5) * 0.025;
     }
     renderer.render(scene, camera);
   }
@@ -3696,6 +3697,9 @@ async function askSage(question) {
   searchInput.value = '';
   bottomSections.style.display = 'none';
 
+  // Clear follow-up bar before new question (keep CTAs visible)
+  document.querySelectorAll('.followup-bar').forEach(el => el.remove());
+
   addResponseCard('question', q, tier);
   setCharState('thinking', 60000);
 
@@ -3797,7 +3801,11 @@ async function askSage(question) {
               if (evt.type === 'content_block_delta' && evt.delta && evt.delta.text) {
                 reply += evt.delta.text;
                 bodyEl.innerHTML = '<p>' + formatMarkdown(reply) + '</p>';
-                streamCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Only auto-scroll if user is near the bottom (not scrolled up)
+                const distFromBottom = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+                if (distFromBottom < 300) {
+                  streamCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
               }
             } catch (e) {}
           }
