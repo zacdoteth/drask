@@ -1114,23 +1114,89 @@
     font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px;
   }
   .section-title .highlight { color: var(--sage-deep); font-weight: 800; }
+  /* ── Trend category tabs ── */
+  .trend-tabs {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .trend-tab {
+    font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; cursor: pointer;
+    background: #fff; border: 1.5px solid var(--border); color: var(--text-light);
+    transition: all 0.15s; letter-spacing: 0.2px;
+  }
+  .trend-tab:hover { border-color: var(--sage); color: var(--sage); }
+  .trend-tab.active { background: var(--sage); color: #fff; border-color: var(--sage); }
+
+  /* ── Trend table header ── */
+  .trend-header {
+    display: grid; grid-template-columns: 28px 1fr 90px 56px 64px;
+    padding: 6px 12px; font-size: 10px; font-weight: 700; color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid var(--border);
+    margin-bottom: 4px; gap: 8px; align-items: center;
+  }
+  .trend-header span:nth-child(3) { text-align: left; }
+  .trend-header span:nth-child(4) { text-align: right; }
+  .trend-header span:nth-child(5) { text-align: center; }
+
+  /* ── Trend rows ── */
+  .trend-list { max-height: 520px; overflow-y: auto; }
+  .trend-list::-webkit-scrollbar { width: 4px; }
+  .trend-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
   .trending-q {
-    background: #fff; border: 1.5px solid var(--border);
-    border-radius: 10px; padding: 13px 18px; margin-bottom: 8px;
-    display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer; transition: all 0.15s; font-size: 14px; font-weight: 500;
+    display: grid; grid-template-columns: 28px 1fr 90px 56px 64px;
+    padding: 10px 12px; gap: 8px; align-items: center;
+    cursor: pointer; transition: all 0.12s; font-size: 13px; font-weight: 500;
+    border-bottom: 1px solid rgba(0,0,0,0.04); border-radius: 0;
   }
   .trending-q:hover {
-    border-color: var(--sage); background: var(--sage-pale);
-    transform: translateX(4px); box-shadow: 0 2px 12px rgba(61,155,143,0.08);
+    background: var(--sage-pale);
   }
-  .trending-q .q { flex: 1; color: var(--text); }
-  .trending-q .arrow {
-    color: var(--sage); font-weight: 800; font-size: 18px;
-    flex-shrink: 0; margin-left: 12px; opacity: 0;
-    transition: opacity 0.15s, transform 0.15s;
+  .trending-q .rank {
+    font-size: 12px; font-weight: 800; color: var(--text-light); text-align: center;
   }
-  .trending-q:hover .arrow { opacity: 1; transform: translateX(3px); }
+  .trending-q .q { color: var(--text); line-height: 1.35; }
+  .trending-q .q .trend-badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+    vertical-align: middle; letter-spacing: 0.2px;
+  }
+  .trend-badge.rising { background: #E8F5F2; color: #2A7A6F; }
+  .trend-badge.peaked { background: #FFF3E0; color: #C77D00; }
+  .trend-badge.viral { background: #FCE4EC; color: #C62828; }
+  .trend-badge.steady { background: #E8EAF6; color: #3949AB; }
+
+  /* ── Interest bar (Google Trends style) ── */
+  .interest-bar {
+    display: flex; align-items: center; gap: 0; height: 14px;
+  }
+  .interest-bar .bar-track {
+    flex: 1; height: 8px; background: #eef2f0; border-radius: 4px; overflow: hidden;
+  }
+  .interest-bar .bar-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--sage) 0%, var(--sage-glow) 100%);
+    transition: width 0.4s ease;
+  }
+
+  /* ── % change ── */
+  .trend-change {
+    font-size: 11px; font-weight: 700; text-align: right; white-space: nowrap;
+  }
+  .trend-change.up { color: #2A7A6F; }
+  .trend-change.down { color: #C62828; }
+  .trend-change.flat { color: #888; }
+
+  /* ── Sparkline ── */
+  .trending-q .sparkline {
+    width: 64px; height: 22px; flex-shrink: 0;
+  }
+  .trending-q .sparkline polyline {
+    fill: none; stroke: var(--sage); stroke-width: 1.5;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .trending-q .sparkline .spark-fill {
+    fill: url(#sparkGrad); stroke: none;
+  }
 
   /* ═══ FOOTER ═══ */
   .site-footer {
@@ -1254,12 +1320,12 @@
       font-size: 16px;
       margin-bottom: 10px;
     }
-    .trending-q {
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 6px;
-    }
-    .trending-q .arrow { opacity: 0.4; }
+    .trend-header { grid-template-columns: 24px 1fr 56px; }
+    .trend-header span:nth-child(4), .trend-header span:nth-child(5) { display: none; }
+    .trending-q { grid-template-columns: 24px 1fr 56px; padding: 8px 10px; font-size: 12px; }
+    .trending-q .trend-change, .trending-q .sparkline { display: none; }
+    .trend-tabs { gap: 4px; }
+    .trend-tab { font-size: 10px; padding: 3px 8px; }
     .response-area { padding: 0 14px 20px; }
     .response-card { padding: 16px; }
     .followup-bar { padding: 4px; }
@@ -1440,25 +1506,64 @@
 <!-- BOTTOM SECTIONS -->
 <div class="bottom-sections" id="bottom-sections">
   <div class="main-content">
+    <svg width="0" height="0" style="position:absolute"><defs>
+      <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--sage)" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="var(--sage)" stop-opacity="0"/>
+      </linearGradient>
+    </defs></svg>
     <div class="section-title">What are people asking <span class="highlight">RIGHT NOW?</span></div>
-    <div class="trending-q" data-q="Do I need a measles booster if I was vaccinated as a kid?"><span class="q">Do I need a measles booster if I was vaccinated as a kid?</span><span class="arrow">&#8594;</span></div>
-    <div class="trending-q" data-q="Is it safe to take Ozempic long-term, and what happens if I stop?"><span class="q">Is it safe to take Ozempic long-term, and what happens if I stop?</span><span class="arrow">&#8594;</span></div>
-    <div class="trending-q" data-q="Should I be worried about bird flu spreading to humans in 2026?"><span class="q">Should I be worried about bird flu spreading to humans in 2026?</span><span class="arrow">&#8594;</span></div>
-    <div class="trending-q" data-q="Why is this flu season so bad, and how do I know if it's flu or RSV?"><span class="q">Why is this flu season so bad, and how do I know if it's flu or RSV?</span><span class="arrow">&#8594;</span></div>
-    <div class="trending-q" data-q="What is fibermaxxing and is it actually good for your gut?"><span class="q">What is fibermaxxing and is it actually good for your gut?</span><span class="arrow">&#8594;</span></div>
-    <div class="trending-q" data-q="Does Ozempic cause muscle loss, and how do I prevent it?"><span class="q">Does Ozempic cause muscle loss, and how do I prevent it?</span><span class="arrow">&#8594;</span></div>
+    <div class="trend-tabs">
+      <div class="trend-tab active" data-cat="all">All</div>
+      <div class="trend-tab" data-cat="glp1">GLP-1s</div>
+      <div class="trend-tab" data-cat="longevity">Longevity</div>
+      <div class="trend-tab" data-cat="peptides">Peptides</div>
+      <div class="trend-tab" data-cat="tiktok">TikTok</div>
+      <div class="trend-tab" data-cat="nutrition">Nutrition</div>
+      <div class="trend-tab" data-cat="sleep">Sleep</div>
+      <div class="trend-tab" data-cat="recovery">Recovery</div>
+    </div>
+    <div class="trend-header">
+      <span>#</span><span>Query</span><span>Interest</span><span>Change</span><span>30d</span>
+    </div>
+    <div class="trend-list">
+      <div class="trending-q" data-q="How can I maintain muscle while on semaglutide (Ozempic) long-term?" data-cat="glp1"><span class="rank">1</span><span class="q">How to maintain muscle on Ozempic long-term?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:95%"></span></span></span><span class="trend-change up">+9%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,14 24,8 32,4 40,3 48,4 56,5 64,5 64,24 0,24"/><polyline points="0,20 8,18 16,14 24,8 32,4 40,3 48,4 56,5 64,5"/></svg></div>
+      <div class="trending-q" data-q="Is low-dose rapamycin safe for non-diseased adults over 50?" data-cat="longevity"><span class="rank">2</span><span class="q">Is low-dose rapamycin safe for adults over 50?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:82%"></span></span></span><span class="trend-change up">+45%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,18 24,16 32,13 40,10 48,7 56,4 64,2 64,24 0,24"/><polyline points="0,22 8,20 16,18 24,16 32,13 40,10 48,7 56,4 64,2"/></svg></div>
+      <div class="trending-q" data-q="Are seed oils like canola actually causing inflammation and obesity, or is this overblown?" data-cat="nutrition"><span class="rank">3</span><span class="q">Are seed oils actually causing inflammation?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:78%"></span></span></span><span class="trend-change up">+38%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,15 24,12 32,9 40,6 48,4 56,3 64,2 64,24 0,24"/><polyline points="0,20 8,18 16,15 24,12 32,9 40,6 48,4 56,3 64,2"/></svg></div>
+      <div class="trending-q" data-q="Does tart cherry juice + magnesium before bed actually induce deep sleep without side effects?" data-cat="sleep tiktok"><span class="rank">4</span><span class="q">Sleepy girl mocktail — does it actually work?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:88%"></span></span></span><span class="trend-change up">+1,200%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,16 24,10 32,4 40,2 48,6 56,10 64,12 64,24 0,24"/><polyline points="0,22 8,20 16,16 24,10 32,4 40,2 48,6 56,10 64,12"/></svg></div>
+      <div class="trending-q" data-q="Does NMN supplementation actually reverse biological age markers?" data-cat="longevity"><span class="rank">5</span><span class="q">Does NMN reverse biological age markers?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:65%"></span></span></span><span class="trend-change up">+4%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,12 8,11 16,13 24,10 32,12 40,11 48,10 56,11 64,10 64,24 0,24"/><polyline points="0,12 8,11 16,13 24,10 32,12 40,11 48,10 56,11 64,10"/></svg></div>
+      <div class="trending-q" data-q="Will taping my mouth shut at night really improve sleep quality and jawline?" data-cat="sleep tiktok"><span class="rank">6</span><span class="q">Mouth taping for sleep — legit or dangerous?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:85%"></span></span></span><span class="trend-change up">+890%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,21 16,18 24,14 32,8 40,4 48,2 56,3 64,4 64,24 0,24"/><polyline points="0,22 8,21 16,18 24,14 32,8 40,4 48,2 56,3 64,4"/></svg></div>
+      <div class="trending-q" data-q="How do I reverse cortisol face puffiness — is stress really causing my moon face?" data-cat="tiktok"><span class="rank">7</span><span class="q">Cortisol face — real condition or TikTok myth?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:80%"></span></span></span><span class="trend-change up">+650%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,16 24,10 32,5 40,2 48,1 56,2 64,3 64,24 0,24"/><polyline points="0,22 8,20 16,16 24,10 32,5 40,2 48,1 56,2 64,3"/></svg></div>
+      <div class="trending-q" data-q="What are the legal risks of sourcing BPC-157 for joint recovery?" data-cat="peptides"><span class="rank">8</span><span class="q">BPC-157 for joint recovery — legal risks?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:55%"></span></span></span><span class="trend-change up">+6%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,14 8,13 16,12 24,13 32,12 40,11 48,12 56,11 64,10 64,24 0,24"/><polyline points="0,14 8,13 16,12 24,13 32,12 40,11 48,12 56,11 64,10"/></svg></div>
+      <div class="trending-q" data-q="Does tirzepatide (Mounjaro) work better than semaglutide for weight loss?" data-cat="glp1"><span class="rank">9</span><span class="q">Mounjaro vs Ozempic — which works better?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:76%"></span></span></span><span class="trend-change up">+32%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,13 32,10 40,7 48,5 56,4 64,3 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,13 32,10 40,7 48,5 56,4 64,3"/></svg></div>
+      <div class="trending-q" data-q="Does eating 50g+ fiber daily really flatten your stomach and fix bloating?" data-cat="tiktok nutrition"><span class="rank">10</span><span class="q">Fibermaxxing — does 50g/day fix bloating?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:72%"></span></span></span><span class="trend-change up">+420%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,19 16,14 24,8 32,4 40,3 48,5 56,8 64,10 64,24 0,24"/><polyline points="0,22 8,19 16,14 24,8 32,4 40,3 48,5 56,8 64,10"/></svg></div>
+      <div class="trending-q" data-q="Can eating only meat reverse autoimmune diseases and improve mental clarity?" data-cat="nutrition"><span class="rank">11</span><span class="q">Carnivore diet for autoimmune — real science?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:68%"></span></span></span><span class="trend-change down">-5%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,18 8,14 16,8 24,4 32,3 40,4 48,7 56,10 64,12 64,24 0,24"/><polyline points="0,18 8,14 16,8 24,4 32,3 40,4 48,7 56,10 64,12"/></svg></div>
+      <div class="trending-q" data-q="Cold plunge benefits — how long and how cold for actual health effects?" data-cat="recovery"><span class="rank">12</span><span class="q">Cold plunge — how cold and how long for benefits?<span class="trend-badge peaked">Peaked</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:70%"></span></span></span><span class="trend-change down">-8%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,16 8,10 16,6 24,3 32,2 40,4 48,6 56,9 64,11 64,24 0,24"/><polyline points="0,16 8,10 16,6 24,3 32,2 40,4 48,6 56,9 64,11"/></svg></div>
+      <div class="trending-q" data-q="Which magnesium type (glycinate vs threonate) is best for sleep?" data-cat="sleep"><span class="rank">13</span><span class="q">Magnesium glycinate vs threonate for sleep?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:64%"></span></span></span><span class="trend-change up">+28%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,14 32,12 40,9 48,7 56,5 64,4 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,14 32,12 40,9 48,7 56,5 64,4"/></svg></div>
+      <div class="trending-q" data-q="Is methylene blue safe as a nootropic? What are the real clinical studies?" data-cat="longevity"><span class="rank">14</span><span class="q">Methylene blue as a nootropic — safe?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:52%"></span></span></span><span class="trend-change up">+55%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,18 24,15 32,12 40,8 48,5 56,4 64,3 64,24 0,24"/><polyline points="0,22 8,20 16,18 24,15 32,12 40,8 48,5 56,4 64,3"/></svg></div>
+      <div class="trending-q" data-q="Is raw milk a superfood for gut health, or dangerous bacteria risk?" data-cat="tiktok nutrition"><span class="rank">15</span><span class="q">Raw milk — superfood or food poisoning risk?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:60%"></span></span></span><span class="trend-change up">+380%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,15 24,8 32,4 40,2 48,4 56,6 64,8 64,24 0,24"/><polyline points="0,22 8,20 16,15 24,8 32,4 40,2 48,4 56,6 64,8"/></svg></div>
+      <div class="trending-q" data-q="Sauna vs cold plunge — which has more evidence for longevity?" data-cat="recovery longevity"><span class="rank">16</span><span class="q">Sauna vs cold plunge for longevity?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:58%"></span></span></span><span class="trend-change up">+12%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,13 8,12 16,11 24,12 32,10 40,11 48,10 56,9 64,9 64,24 0,24"/><polyline points="0,13 8,12 16,11 24,12 32,10 40,11 48,10 56,9 64,9"/></svg></div>
+      <div class="trending-q" data-q="TB-500 and GHK-Cu peptides — what does the research actually show?" data-cat="peptides"><span class="rank">17</span><span class="q">TB-500 + GHK-Cu peptides — real evidence?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:45%"></span></span></span><span class="trend-change up">+8%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,14 8,13 16,13 24,12 32,12 40,11 48,11 56,10 64,10 64,24 0,24"/><polyline points="0,14 8,13 16,13 24,12 32,12 40,11 48,11 56,10 64,10"/></svg></div>
+      <div class="trending-q" data-q="Creatine for brain health — what does Huberman get right and wrong?" data-cat="longevity"><span class="rank">18</span><span class="q">Creatine for brain health — what's proven?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:56%"></span></span></span><span class="trend-change up">+22%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,18 8,16 16,14 24,13 32,11 40,9 48,8 56,6 64,5 64,24 0,24"/><polyline points="0,18 8,16 16,14 24,13 32,11 40,9 48,8 56,6 64,5"/></svg></div>
+      <div class="trending-q" data-q="Do castor oil packs actually detox your liver and shrink fibroids?" data-cat="tiktok"><span class="rank">19</span><span class="q">Castor oil liver detox — real or placebo?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:50%"></span></span></span><span class="trend-change up">+310%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,18 16,12 24,6 32,3 40,2 48,4 56,7 64,9 64,24 0,24"/><polyline points="0,22 8,18 16,12 24,6 32,3 40,2 48,4 56,7 64,9"/></svg></div>
+      <div class="trending-q" data-q="What is retatrutide and how does it compare to Ozempic and Mounjaro?" data-cat="glp1"><span class="rank">20</span><span class="q">Retatrutide — the next GLP-1 drug?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:48%"></span></span></span><span class="trend-change up">+180%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,21 16,20 24,18 32,14 40,10 48,6 56,4 64,3 64,24 0,24"/><polyline points="0,22 8,21 16,20 24,18 32,14 40,10 48,6 56,4 64,3"/></svg></div>
+      <div class="trending-q" data-q="Red light therapy — what wavelengths and protocols actually have evidence?" data-cat="recovery"><span class="rank">21</span><span class="q">Red light therapy — what actually works?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:46%"></span></span></span><span class="trend-change up">+14%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,15 8,14 16,13 24,13 32,12 40,11 48,10 56,10 64,9 64,24 0,24"/><polyline points="0,15 8,14 16,13 24,13 32,12 40,11 48,10 56,10 64,9"/></svg></div>
+      <div class="trending-q" data-q="Dasatinib + quercetin as senolytics — can they clear zombie cells safely?" data-cat="longevity"><span class="rank">22</span><span class="q">Senolytics (dasatinib + quercetin) — safe?<span class="trend-badge rising">Rising</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:42%"></span></span></span><span class="trend-change up">+35%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,20 8,18 16,16 24,14 32,12 40,9 48,7 56,5 64,4 64,24 0,24"/><polyline points="0,20 8,18 16,16 24,14 32,12 40,9 48,7 56,5 64,4"/></svg></div>
+      <div class="trending-q" data-q="Testosterone, estrogen, DHEA — what does real hormone optimization look like?" data-cat="longevity"><span class="rank">23</span><span class="q">Hormone optimization — what's evidence-based?<span class="trend-badge steady">Steady</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:54%"></span></span></span><span class="trend-change up">+10%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,9 64,9 64,24 0,24"/><polyline points="0,13 8,12 16,12 24,11 32,11 40,10 48,10 56,9 64,9"/></svg></div>
+      <div class="trending-q" data-q="Can beef tallow replace moisturizer for glowing skin, or does it clog pores?" data-cat="tiktok"><span class="rank">24</span><span class="q">Beef tallow as skincare — legit or gross?<span class="trend-badge viral">Viral</span></span><span class="interest-bar"><span class="bar-track"><span class="bar-fill" style="width:44%"></span></span></span><span class="trend-change up">+520%</span><svg class="sparkline" viewBox="0 0 64 24"><polygon class="spark-fill" points="0,22 8,20 16,14 24,8 32,4 40,3 48,5 56,8 64,10 64,24 0,24"/><polyline points="0,22 8,20 16,14 24,8 32,4 40,3 48,5 56,8 64,10"/></svg></div>
+    </div>
   </div>
   <div class="sidebar">
     <div class="sidebar-title">&#127807; Topics</div>
     <div class="sidebar-chips">
-      <div class="sidebar-link" data-q="What does my blood test results mean?"><span class="dot"></span> Blood Work</div>
-      <div class="sidebar-link" data-q="What questions should I ask before surgery?"><span class="dot"></span> Pre-Surgery</div>
-      <div class="sidebar-link" data-q="Explain common medication interactions"><span class="dot"></span> Drug Interactions</div>
-      <div class="sidebar-link" data-q="What are signs of vitamin deficiency?"><span class="dot"></span> Vitamins</div>
-      <div class="sidebar-link" data-q="How to read a nutrition label properly"><span class="dot"></span> Nutrition</div>
-      <div class="sidebar-link" data-q="What screenings should I get at my age?"><span class="dot"></span> Screenings</div>
-      <div class="sidebar-link" data-q="How does stress affect the body physically?"><span class="dot"></span> Stress &amp; Body</div>
-      <div class="sidebar-link" data-q="What are the signs of caregiver burnout?"><span class="dot"></span> Caregiver</div>
+      <div class="sidebar-link" data-q="How do GLP-1 drugs like Ozempic and Mounjaro work, and what are the real side effects?"><span class="dot"></span> GLP-1s</div>
+      <div class="sidebar-link" data-q="What are the most promising longevity drugs — rapamycin, metformin, senolytics?"><span class="dot"></span> Longevity</div>
+      <div class="sidebar-link" data-q="What peptides like BPC-157 and TB-500 are being used for recovery, and are they safe?"><span class="dot"></span> Peptides</div>
+      <div class="sidebar-link" data-q="What nootropics and functional compounds actually have clinical evidence?"><span class="dot"></span> Nootropics</div>
+      <div class="sidebar-link" data-q="Seed oils, carnivore diet, oxalates, lectins — what does the science actually say?"><span class="dot"></span> Nutrition Wars</div>
+      <div class="sidebar-link" data-q="Mouth taping, sleepy girl mocktails, magnesium — what sleep hacks actually work?"><span class="dot"></span> Sleep Hacks</div>
+      <div class="sidebar-link" data-q="Cortisol face, adrenal fatigue, stress belly — real conditions or TikTok myths?"><span class="dot"></span> Stress &amp; Cortisol</div>
+      <div class="sidebar-link" data-q="Cold plunge, sauna, red light therapy — which recovery protocols have real evidence?"><span class="dot"></span> Recovery</div>
     </div>
   </div>
 </div>
@@ -2712,6 +2817,23 @@ class SceneManager {
     const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     this._raycaster.setFromCamera({ x, y }, this._camera);
+
+    // Check duck first
+    if (this._duck) {
+      const duckHits = this._raycaster.intersectObject(this._duck, true);
+      if (duckHits.length > 0) {
+        this._duckClicked = true;
+        this._duckClickTime = performance.now();
+        if (!this._duckLines) this._duckLines = ["Quack!", "Quack quack!", "I'm Dr. Duck!", "Got any grapes?", "Quaaack!", "Rubber ducky!", "Quack? Quack."];
+        if (this._duckLineIdx == null) this._duckLineIdx = 0;
+        if (typeof showClickBubble === 'function') {
+          showClickBubble(this._duckLines[this._duckLineIdx], 1800);
+        }
+        this._duckLineIdx = (this._duckLineIdx + 1) % this._duckLines.length;
+        return;
+      }
+    }
+
     const intersects = this._raycaster.intersectObject(this._model, true);
     if (intersects.length > 0) {
       this.triggerClick();
@@ -2732,8 +2854,16 @@ class SceneManager {
     const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     this._raycaster.setFromCamera({ x, y }, this._camera);
-    const intersects = this._raycaster.intersectObject(this._model, true);
-    this._hovered = intersects.length > 0;
+    let hovered = false;
+    if (this._duck) {
+      const duckHits = this._raycaster.intersectObject(this._duck, true);
+      if (duckHits.length > 0) hovered = true;
+    }
+    if (!hovered) {
+      const intersects = this._raycaster.intersectObject(this._model, true);
+      if (intersects.length > 0) hovered = true;
+    }
+    this._hovered = hovered;
     this._canvas.style.cursor = this._hovered ? 'pointer' : 'default';
   }
 
@@ -2885,9 +3015,23 @@ class SceneManager {
 
     // (Search panel is now below the scene — no CSS projection needed)
 
-    // ── Duck sway ──
+    // ── Duck sway + click spin ──
     if (this._duck) {
-      this._duck.rotation.y = Math.sin(elapsed * 0.5) * 0.08;
+      if (this._duckClicked) {
+        const dt = (performance.now() - this._duckClickTime) / 1000;
+        if (dt < 0.8) {
+          // Spin + jump
+          const t = dt / 0.8;
+          this._duck.rotation.y = (this._isMobile ? 0.3 : -0.3) + t * Math.PI * 2;
+          this._duck.position.y += Math.sin(t * Math.PI) * 0.003;
+        } else {
+          this._duckClicked = false;
+          this._duck.rotation.y = this._isMobile ? 0.3 : -0.3;
+        }
+      } else {
+        const baseY = this._isMobile ? 0.3 : -0.3;
+        this._duck.rotation.y = baseY + Math.sin(elapsed * 0.5) * 0.08;
+      }
     }
 
     // ── Coffee steam animation ──
@@ -3646,6 +3790,21 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
+  });
+});
+// Trend category tab filtering
+document.querySelectorAll('.trend-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.trend-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const cat = tab.dataset.cat;
+    let rank = 1;
+    document.querySelectorAll('.trend-list .trending-q').forEach(row => {
+      const cats = (row.dataset.cat || '').split(' ');
+      const show = cat === 'all' || cats.includes(cat);
+      row.style.display = show ? '' : 'none';
+      if (show) { row.querySelector('.rank').textContent = rank++; }
+    });
   });
 });
 
